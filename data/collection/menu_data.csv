@@ -1,0 +1,2 @@
+category,brand_name,brand_slug,menu_name,menu_slug,menu_url,allergens_contains,allergens_may_contain,allergens_unknown,origin_text,source_url,raw_text,checked_at,status,note
+chicken,교촌치킨,kyochon,허니콤보,honey-combo,https://www.kyochon.com/menu/chicken.asp,milk;soybean;wheat,egg,,닭고기: 국내산; 소스류: 확인 필요,https://www.kyochon.com/menu/allergyinfo.asp,"예시: 우유, 대두, 밀 포함 / 계란 혼입 가능",2026-06-29,검수 완료,예시 행이므로 실제 수집 시 공식 페이지 기준으로 수정
