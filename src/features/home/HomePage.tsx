@@ -1,41 +1,77 @@
-import { Link } from 'react-router-dom';
-import { allergenOptions } from '../../constants/allergens';
-import { useSelectedAllergens } from '../allergies/useSelectedAllergens';
+import { Link } from "react-router-dom";
+import { AppTopBar } from "../../components/layout/AppTopBar";
+import { FoodFallback } from "../../components/ui/FoodFallback";
+import { allergenOptions } from "../../constants/allergens";
+import { useSelectedAllergens } from "../allergies/useSelectedAllergens";
+import { useCatalogData } from "../catalog/useCatalogData";
+
+function getCategoryGraphic(slug: string) {
+  return slug === "pizza" ? "🍕" : "🍗";
+}
+
+function getCategoryTone(slug: string) {
+  return slug === "pizza" ? "red" : "warm";
+}
 
 export function HomePage() {
   const { selectedCodes } = useSelectedAllergens();
+  const { categories, isLoading } = useCatalogData();
   const selectedNames = allergenOptions
     .filter((allergen) => selectedCodes.includes(allergen.code))
     .map((allergen) => allergen.displayName);
 
   return (
     <section className="page page--home">
+      <AppTopBar action="settings" showLogo />
       <div className="hero-band">
-        <p className="eyebrow">AllerFit</p>
-        <h1>오늘 먹어도 되는 메뉴를 더 빠르게.</h1>
+        <h1>안녕하세요! 👋</h1>
         <p className="hero-band__copy">
           {selectedNames.length > 0
-            ? `${selectedNames.join(', ')} 제외 기준으로 확인할게요.`
-            : '내 알레르기를 설정하면 메뉴 판정이 더 정확해져요.'}
+            ? `${selectedNames.join(", ")} 제외 기준으로 추천해드려요.`
+            : "먹을 수 있는 메뉴를 추천해드려요."}
         </p>
-        <Link className="button button--primary" to="/settings/allergies">
-          내 알레르기 설정
-        </Link>
       </div>
 
+      <div className="home-section-header">
+        <strong>내 알레르기 성분</strong>
+        <Link to="/settings/allergies">수정</Link>
+      </div>
+      <div className="selected-allergen-row">
+        {selectedNames.length > 0 ? (
+          selectedNames
+            .slice(0, 4)
+            .map((name) => <span key={name}>{name}</span>)
+        ) : (
+          <Link to="/settings/allergies">알레르기 성분 선택하기</Link>
+        )}
+      </div>
+
+      <div className="home-section-header">
+        <strong>추천 카테고리</strong>
+      </div>
       <div className="section-grid">
-        <Link className="content-card category-card" to="/category/chicken">
-          <span>치킨</span>
-          <strong>공시 정보 기준으로 확인하기</strong>
-        </Link>
-        <Link className="content-card category-card" to="/category/pizza">
-          <span>피자</span>
-          <strong>브랜드와 메뉴를 검색하기</strong>
-        </Link>
+        {categories.map((category) => (
+          <Link
+            className="content-card category-card"
+            key={category.slug}
+            to={`/category/${category.slug}`}
+          >
+            <FoodFallback
+              label={getCategoryGraphic(category.slug)}
+              tone={getCategoryTone(category.slug)}
+              size="lg"
+            />
+          </Link>
+        ))}
       </div>
 
-      <div className="content-card notice-card">
-        <strong>안전 문구</strong>
+      {isLoading ? (
+        <div className="empty-card">
+          <strong>Supabase 데이터를 불러오는 중이에요.</strong>
+        </div>
+      ) : null}
+
+      <div className="notice-card">
         <p>
           알러핏은 공개된 알레르기 정보를 기준으로 메뉴를 분류합니다. 중증
           알레르기가 있는 경우 주문 전 매장에 반드시 확인해주세요.

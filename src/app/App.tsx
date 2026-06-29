@@ -4,7 +4,7 @@ import { BottomNavigation } from '../components/layout/BottomNavigation';
 export function App() {
   return (
     <div className="app-shell">
-      <main className="app-main">
+      <main className="app-main app-phone">
         <Outlet />
       </main>
       <BottomNavigation />

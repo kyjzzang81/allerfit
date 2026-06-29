@@ -1,7 +1,12 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
 :root {
-  font-family: Pretendard, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    Pretendard,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   color: #0e0f0c;
   background: #e8ebe6;
   font-synthesis: none;
@@ -19,12 +24,33 @@
   --color-warning: #ffd11a;
   --color-negative: #d03238;
   --gradient-app-background:
-    radial-gradient(circle at 18% 0%, rgb(159 232 112 / 42%) 0%, transparent 34%),
-    radial-gradient(circle at 96% 12%, rgb(255 219 230 / 70%) 0%, transparent 28%),
-    linear-gradient(180deg, #f8faf5 0%, var(--color-canvas-soft) 42%, #f4f1f3 100%);
+    radial-gradient(
+      circle at 18% 0%,
+      rgb(159 232 112 / 42%) 0%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 96% 12%,
+      rgb(255 219 230 / 70%) 0%,
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      #f8faf5 0%,
+      var(--color-canvas-soft) 42%,
+      #f4f1f3 100%
+    );
   --gradient-app-background-overlay:
-    radial-gradient(circle at 78% 36%, rgb(159 232 112 / 22%) 0%, transparent 26%),
-    radial-gradient(circle at 14% 72%, rgb(255 244 249 / 86%) 0%, transparent 30%);
+    radial-gradient(
+      circle at 78% 36%,
+      rgb(159 232 112 / 22%) 0%,
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 14% 72%,
+      rgb(255 244 249 / 86%) 0%,
+      transparent 30%
+    );
   --radius-xl: 24px;
   --radius-md: 12px;
   --radius-pill: 9999px;
@@ -55,7 +81,7 @@ input {
 
 .app-shell {
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -64,7 +90,7 @@ input {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  content: '';
+  content: "";
   background: var(--gradient-app-background-overlay);
   opacity: 0.9;
 }
@@ -72,22 +98,99 @@ input {
 .app-main {
   position: relative;
   z-index: 1;
-  width: min(100%, 1180px);
+  width: min(100%, 430px);
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: 20px 16px calc(var(--nav-height) + 28px);
+  padding: 14px 16px calc(var(--nav-height) + 22px);
+  background: rgb(255 255 255 / 74%);
+  box-shadow: 0 0 0 1px rgb(14 15 12 / 6%);
 }
 
 .page {
   display: grid;
-  gap: 24px;
+  gap: 18px;
+}
+
+.app-top-bar {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-ink);
+}
+
+.app-top-bar > strong {
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-top-bar__side {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.app-top-bar__side--right {
+  justify-content: flex-end;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.top-text-action {
+  color: var(--color-body);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.brand-mark--top {
+  justify-self: center;
+  font-size: 18px;
+}
+
+.brand-mark span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-ink);
+  font-size: 14px;
+  line-height: 1;
 }
 
 .hero-band {
   display: grid;
-  gap: 20px;
-  min-height: 300px;
-  align-content: center;
-  padding: 36px 8px 24px;
+  gap: 8px;
+  min-height: auto;
+  align-content: start;
+  padding: 8px 0 4px;
   color: var(--color-ink);
 }
 
@@ -99,10 +202,10 @@ input {
 }
 
 h1 {
-  max-width: 10ch;
+  max-width: 14ch;
   margin: 0;
-  font-size: clamp(42px, 13vw, 64px);
-  line-height: 1.05;
+  font-size: 24px;
+  line-height: 1.18;
   font-weight: 700;
   letter-spacing: 0;
   text-wrap: balance;
@@ -153,30 +256,73 @@ h1 {
   gap: 12px;
 }
 
+.home-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.home-section-header strong {
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.home-section-header a {
+  color: var(--color-body);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.selected-allergen-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 2px;
+}
+
+.selected-allergen-row span,
+.selected-allergen-row a {
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 86%);
+  color: var(--color-body);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: inset 0 0 0 1px rgb(14 15 12 / 8%);
+}
+
 .content-card {
   display: grid;
   gap: 10px;
-  padding: 24px;
+  padding: 14px;
   border-radius: var(--radius-xl);
   background: var(--color-canvas);
 }
 
 .category-card {
-  min-height: 148px;
-  align-content: space-between;
+  min-height: 184px;
+  align-content: flex-start;
+  overflow: hidden;
 }
 
-.category-card span {
-  color: var(--color-mute);
-  font-size: 14px;
+.category-card-text {
+  color: var(--color-body);
+  font-size: 16px;
   font-weight: 500;
 }
-
 .category-card strong,
 .notice-card strong,
 .empty-card strong {
   font-size: 22px;
   line-height: 1.2;
+}
+.notice-card p {
+  color: var(--color-mute);
+  font-size: 13px;
 }
 
 .page-header {
@@ -216,7 +362,7 @@ h1 {
 .category-hero {
   display: grid;
   gap: 12px;
-  padding: 24px 8px 4px;
+  padding: 0 0 2px;
 }
 
 .category-hero h1 {
@@ -269,19 +415,67 @@ h1 {
   color: var(--color-mute);
 }
 
+.brand-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+  scroll-padding-inline: 2px;
+  scrollbar-width: none;
+}
+
+.brand-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.brand-carousel__item {
+  display: grid;
+  flex: 0 0 auto;
+  justify-items: center;
+  gap: 7px;
+  min-width: 72px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-body);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.brand-carousel__item .brand-logo {
+  transition:
+    transform 180ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.brand-carousel__item--selected {
+  color: var(--color-ink);
+}
+
+.brand-carousel__item--selected .brand-logo {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 22px rgb(78 196 37 / 16%),
+    inset 0 0 0 2px var(--color-primary);
+}
+
 .menu-card-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: 9px;
 }
 
 .menu-card {
   display: grid;
-  align-content: space-between;
-  gap: 16px;
-  min-height: 178px;
-  padding: 16px;
-  border-radius: 24px;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 88px;
+  padding: 10px;
+  border-radius: 16px;
   background: rgb(255 255 255 / 92%);
   box-shadow:
     0 14px 32px rgb(14 15 12 / 7%),
@@ -298,17 +492,140 @@ h1 {
 .brand-logo {
   display: grid;
   place-items: center;
+  overflow: hidden;
   width: 62px;
   height: 62px;
   border-radius: 18px;
   background:
-    radial-gradient(circle at 30% 20%, rgb(255 255 255 / 86%) 0%, transparent 34%),
+    radial-gradient(
+      circle at 30% 20%,
+      rgb(255 255 255 / 86%) 0%,
+      transparent 34%
+    ),
     var(--color-primary);
   color: var(--color-ink);
   font-size: 22px;
   font-weight: 700;
   line-height: 1;
   box-shadow: inset 0 0 0 1px rgb(14 15 12 / 9%);
+}
+
+.brand-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.food-fallback {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      circle at 28% 22%,
+      rgb(255 255 255 / 90%) 0%,
+      transparent 34%
+    ),
+    linear-gradient(135deg, rgb(226 246 213 / 86%), rgb(255 248 238 / 92%));
+  box-shadow:
+    inset 0 0 0 1px rgb(14 15 12 / 7%),
+    0 10px 22px rgb(14 15 12 / 6%);
+}
+
+.food-fallback::before,
+.food-fallback::after {
+  position: absolute;
+  width: 58%;
+  height: 58%;
+  border-radius: var(--radius-full);
+  content: "";
+  background: rgb(159 232 112 / 24%);
+}
+
+.food-fallback::before {
+  right: -14%;
+  bottom: -14%;
+}
+
+.food-fallback::after {
+  top: -18%;
+  left: -16%;
+  background: rgb(255 219 230 / 50%);
+}
+
+.food-fallback span {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 8px 8px rgb(14 15 12 / 12%));
+}
+
+.food-fallback--sm {
+  width: 68px;
+  height: 68px;
+  font-size: 36px;
+}
+
+.food-fallback--md {
+  width: 68px;
+  height: 68px;
+  font-size: 36px;
+}
+
+.food-fallback--lg {
+  width: 100%;
+  min-height: 104px;
+  font-size: 58px;
+}
+
+.food-fallback--warm {
+  background:
+    radial-gradient(
+      circle at 28% 22%,
+      rgb(255 255 255 / 90%) 0%,
+      transparent 34%
+    ),
+    linear-gradient(135deg, rgb(255 246 221 / 92%), rgb(255 225 195 / 80%));
+}
+
+.food-fallback--red {
+  background:
+    radial-gradient(
+      circle at 28% 22%,
+      rgb(255 255 255 / 90%) 0%,
+      transparent 34%
+    ),
+    linear-gradient(135deg, rgb(255 244 240 / 95%), rgb(255 219 230 / 90%));
+}
+
+.food-visual {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--color-bg-soft);
+  box-shadow: inset 0 0 0 1px rgb(14 15 12 / 7%);
+}
+
+.food-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.food-visual--sm,
+.food-visual--md {
+  width: 68px;
+  height: 68px;
+}
+
+.food-visual--lg {
+  width: 100%;
+  min-height: 104px;
 }
 
 .menu-card__text {
@@ -332,7 +649,7 @@ h1 {
 
 .menu-card__text span {
   color: var(--color-ink);
-  font-size: clamp(19px, 5vw, 24px);
+  font-size: 17px;
   font-weight: 700;
   line-height: 1.15;
 }
@@ -377,10 +694,10 @@ h1 {
 
 .brand-hero {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: end;
-  gap: 18px;
-  padding: 24px 8px 10px;
+  justify-items: center;
+  gap: 10px;
+  padding: 8px 8px 12px;
+  text-align: center;
 }
 
 .brand-logo--hero {
@@ -392,21 +709,25 @@ h1 {
 
 .brand-hero__copy {
   display: grid;
+  justify-items: center;
   gap: 9px;
   min-width: 0;
 }
 
 .brand-hero h1 {
-  max-width: 12ch;
-  font-size: clamp(44px, 13vw, 76px);
+  max-width: 16ch;
+  font-size: 24px;
 }
 
 .brand-hero p:not(.eyebrow) {
   margin: 0;
-  color: var(--color-body);
-  font-size: 17px;
+  color: var(--color-warning);
+  font-size: 16px;
   line-height: 1.45;
   text-wrap: pretty;
+  background-color: var(--color-positive);
+  padding: 1px 3px;
+  border-radius: 8px;
 }
 
 .brand-summary {
@@ -414,8 +735,8 @@ h1 {
   grid-template-columns: auto minmax(0, 1fr);
   gap: 2px 10px;
   align-items: baseline;
-  padding: 20px;
-  border-radius: 24px;
+  padding: 16px;
+  border-radius: 16px;
   background: rgb(255 255 255 / 88%);
   box-shadow:
     0 14px 36px rgb(14 15 12 / 7%),
@@ -446,17 +767,18 @@ h1 {
 
 .brand-menu-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: 9px;
 }
 
 .brand-menu-card {
   display: grid;
-  gap: 18px;
-  align-content: space-between;
-  min-height: 164px;
-  padding: 16px;
-  border-radius: 24px;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 88px;
+  padding: 10px;
+  border-radius: 16px;
   background: rgb(255 255 255 / 92%);
   box-shadow:
     0 14px 32px rgb(14 15 12 / 7%),
@@ -477,7 +799,11 @@ h1 {
   height: 58px;
   border-radius: 18px;
   background:
-    radial-gradient(circle at 30% 20%, rgb(255 255 255 / 86%) 0%, transparent 34%),
+    radial-gradient(
+      circle at 30% 20%,
+      rgb(255 255 255 / 86%) 0%,
+      transparent 34%
+    ),
     var(--color-primary);
   color: var(--color-ink);
   font-size: 22px;
@@ -489,8 +815,8 @@ h1 {
 .brand-menu-card strong {
   overflow: hidden;
   color: var(--color-ink);
-  font-size: clamp(20px, 5vw, 25px);
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
   line-height: 1.15;
   text-overflow: ellipsis;
 }
@@ -526,6 +852,156 @@ h1 {
   border-radius: var(--radius-pill);
   background: rgb(255 255 255 / 72%);
   color: var(--color-body);
+}
+
+.menu-detail-page,
+.onboarding-page,
+.profile-page {
+  gap: 18px;
+}
+
+.menu-detail-hero,
+.onboarding-hero {
+  display: grid;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.menu-detail-graphic {
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  font-size: 54px;
+  line-height: 1;
+}
+
+.menu-detail-hero h1,
+.onboarding-hero h1 {
+  max-width: 15ch;
+  font-size: 28px;
+}
+
+.menu-detail-hero p:not(.eyebrow),
+.onboarding-hero p {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--color-body);
+  font-size: 17px;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.text-link {
+  width: fit-content;
+  color: var(--color-body);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.detail-result-panel,
+.detail-section,
+.onboarding-panel,
+.onboarding-note,
+.profile-summary-card {
+  display: grid;
+  gap: 14px;
+  padding: 24px;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 88%);
+  box-shadow:
+    0 14px 36px rgb(14 15 12 / 7%),
+    inset 0 0 0 1px rgb(14 15 12 / 7%);
+}
+
+.detail-result-panel strong,
+.detail-section h2,
+.onboarding-panel__header strong,
+.onboarding-note strong,
+.profile-summary-card strong {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.detail-result-panel p,
+.detail-section p,
+.onboarding-note p,
+.profile-summary-card p {
+  margin: 0;
+  color: var(--color-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.detail-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-chip-list span,
+.compact-allergen,
+.onboarding-panel__header span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgb(232 235 230 / 80%);
+  color: var(--color-body);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.onboarding-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.compact-allergen-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compact-allergen {
+  cursor: pointer;
+  transition-property: background-color, scale;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.compact-allergen--selected {
+  background: var(--color-primary);
+  color: var(--color-ink);
+}
+
+.compact-allergen:active {
+  scale: 0.96;
+}
+
+.profile-summary-card span {
+  color: var(--color-ink);
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-summary-card .button {
+  margin-top: 4px;
+}
+
+.profile-link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .allergies-page {
@@ -599,8 +1075,11 @@ h1 {
   border-radius: 24px;
   color: var(--color-ink);
   text-align: center;
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 98%) 0%, rgb(255 255 255 / 86%) 100%);
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 98%) 0%,
+    rgb(255 255 255 / 86%) 100%
+  );
   box-shadow:
     0 12px 28px rgb(14 15 12 / 7%),
     inset 0 0 0 1px rgb(14 15 12 / 8%);
@@ -612,7 +1091,11 @@ h1 {
 
 .allergen-chip--selected {
   background:
-    radial-gradient(circle at 50% 20%, rgb(205 255 173 / 95%) 0%, transparent 46%),
+    radial-gradient(
+      circle at 50% 20%,
+      rgb(205 255 173 / 95%) 0%,
+      transparent 46%
+    ),
     var(--color-primary);
   box-shadow:
     0 16px 32px rgb(5 77 40 / 13%),
@@ -687,14 +1170,14 @@ h1 {
 
 .bottom-nav {
   position: fixed;
-  right: 16px;
+  right: max(16px, calc((100vw - 430px) / 2 + 16px));
   bottom: 14px;
-  left: 16px;
+  left: max(16px, calc((100vw - 430px) / 2 + 16px));
   z-index: 10;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
-  max-width: 728px;
+  max-width: 398px;
   min-height: 68px;
   margin: 0 auto;
   padding: 6px;
@@ -722,15 +1205,13 @@ h1 {
 
 @media (min-width: 768px) {
   .app-main {
-    width: min(100%, 960px);
-    padding-top: 32px;
-    padding-right: 24px;
-    padding-left: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 28px;
   }
 
   .hero-band {
-    min-height: 360px;
-    padding: 56px 8px 32px;
+    padding-top: 10px;
   }
 
   .allergen-grid {
@@ -748,41 +1229,17 @@ h1 {
     font-size: 38px;
   }
 
-  .menu-card-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-
   .menu-card {
-    min-height: 190px;
-    padding: 18px;
-  }
-
-  .brand-menu-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    min-height: 88px;
   }
 
   .brand-menu-card {
-    min-height: 180px;
-    padding: 18px;
+    min-height: 88px;
   }
 }
 
 @media (min-width: 1120px) {
   .app-main {
-    width: min(100%, 1180px);
-    padding-right: 32px;
-    padding-left: 32px;
-  }
-
-  .menu-card-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .brand-menu-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    width: min(100%, 430px);
   }
 }

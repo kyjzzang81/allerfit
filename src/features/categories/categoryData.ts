@@ -6,11 +6,14 @@ export interface CategoryInfo {
 
 export interface CategoryMenu {
   id: string;
+  dbId?: string;
   categorySlug: string;
   brandSlug: string;
   brandName: string;
   brandLogoText: string;
   menuName: string;
+  menuGraphicText: string;
+  imageUrl?: string | null;
   contains: string[];
   mayContain: string[];
   lastCheckedAt: string;
@@ -23,6 +26,7 @@ export interface BrandInfo {
   categorySlug: string;
   officialUrl: string;
   allergenSourceUrl: string;
+  logoUrl?: string | null;
 }
 
 export const categories: CategoryInfo[] = [
@@ -113,6 +117,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '굽네치킨',
     brandLogoText: '굽',
     menuName: '오리지널',
+    menuGraphicText: '🍗',
     contains: ['chicken'],
     mayContain: [],
     lastCheckedAt: '2026-06-28',
@@ -124,6 +129,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '굽네치킨',
     brandLogoText: '굽',
     menuName: '갈비천왕',
+    menuGraphicText: '🍗',
     contains: ['chicken', 'soybean'],
     mayContain: ['wheat'],
     lastCheckedAt: '2026-06-28',
@@ -135,6 +141,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '네네치킨',
     brandLogoText: '네',
     menuName: '후라이드',
+    menuGraphicText: '🍗',
     contains: ['chicken', 'wheat'],
     mayContain: [],
     lastCheckedAt: '2026-06-26',
@@ -146,6 +153,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '네네치킨',
     brandLogoText: '네',
     menuName: '스노윙치즈',
+    menuGraphicText: '🧀',
     contains: ['chicken', 'milk', 'soybean'],
     mayContain: ['wheat'],
     lastCheckedAt: '2026-06-26',
@@ -157,6 +165,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: 'BBQ',
     brandLogoText: 'B',
     menuName: '황금올리브',
+    menuGraphicText: '🍗',
     contains: ['chicken', 'wheat'],
     mayContain: ['soybean'],
     lastCheckedAt: '2026-06-27',
@@ -168,6 +177,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '교촌치킨',
     brandLogoText: '교',
     menuName: '교촌 오리지날',
+    menuGraphicText: '🍗',
     contains: ['chicken', 'soybean'],
     mayContain: [],
     lastCheckedAt: '2026-06-25',
@@ -179,6 +189,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '도미노피자',
     brandLogoText: 'D',
     menuName: '치즈 피자',
+    menuGraphicText: '🍕',
     contains: ['milk', 'wheat'],
     mayContain: ['soybean'],
     lastCheckedAt: '2026-06-28',
@@ -190,6 +201,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '도미노피자',
     brandLogoText: 'D',
     menuName: '포테이토',
+    menuGraphicText: '🥔',
     contains: ['milk', 'wheat', 'pork'],
     mayContain: ['soybean'],
     lastCheckedAt: '2026-06-28',
@@ -201,6 +213,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '피자헛',
     brandLogoText: 'P',
     menuName: '페퍼로니',
+    menuGraphicText: '🍕',
     contains: ['milk', 'wheat', 'pork'],
     mayContain: [],
     lastCheckedAt: '2026-06-27',
@@ -212,6 +225,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '미스터피자',
     brandLogoText: 'M',
     menuName: '불고기 피자',
+    menuGraphicText: '🍕',
     contains: ['milk', 'wheat', 'beef', 'soybean'],
     mayContain: [],
     lastCheckedAt: '2026-06-26',
@@ -223,6 +237,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '피자스쿨',
     brandLogoText: '스',
     menuName: '고르곤졸라',
+    menuGraphicText: '🧀',
     contains: ['milk', 'wheat'],
     mayContain: [],
     lastCheckedAt: '2026-06-24',
@@ -234,6 +249,7 @@ export const categoryMenus: CategoryMenu[] = [
     brandName: '피자스쿨',
     brandLogoText: '스',
     menuName: '고구마 피자',
+    menuGraphicText: '🍠',
     contains: ['milk', 'wheat', 'egg'],
     mayContain: ['soybean'],
     lastCheckedAt: '2026-06-24',
