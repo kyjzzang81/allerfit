@@ -16,14 +16,15 @@ interface AllergenOptionsState {
 type SupabaseAllergen = Database['public']['Tables']['allergens']['Row'];
 
 export function useAllergenOptions(): AllergenOptionsState {
+  const hasSupabaseConfig = isSupabaseConfigured();
   const [state, setState] = useState<AllergenOptionsState>({
-    allergenOptions: fallbackAllergenOptions,
-    isLoading: isSupabaseConfigured(),
+    allergenOptions: hasSupabaseConfig ? [] : fallbackAllergenOptions,
+    isLoading: hasSupabaseConfig,
     error: null,
   });
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) {
+    if (!hasSupabaseConfig) {
       setState({
         allergenOptions: fallbackAllergenOptions,
         isLoading: false,
@@ -53,7 +54,7 @@ export function useAllergenOptions(): AllergenOptionsState {
       } catch (error) {
         if (isMounted) {
           setState({
-            allergenOptions: fallbackAllergenOptions,
+            allergenOptions: [],
             isLoading: false,
             error: error instanceof Error ? error : new Error(String(error)),
           });
@@ -66,7 +67,7 @@ export function useAllergenOptions(): AllergenOptionsState {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [hasSupabaseConfig]);
 
   return state;
 }

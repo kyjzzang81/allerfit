@@ -1,19 +1,14 @@
-import { ChevronLeft, Settings, Share2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, Search, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface AppTopBarProps {
   title?: string;
   showBack?: boolean;
   showLogo?: boolean;
-  action?: 'settings' | 'share' | 'skip';
+  action?: "settings" | "share" | "skip";
 }
 
-export function AppTopBar({
-  title,
-  showBack = false,
-  showLogo = false,
-  action,
-}: AppTopBarProps) {
+export function AppTopBar({ showBack = false }: AppTopBarProps) {
   const navigate = useNavigate();
 
   return (
@@ -28,27 +23,32 @@ export function AppTopBar({
           >
             <ChevronLeft aria-hidden="true" size={21} />
           </button>
-        ) : null}
+        ) : (
+          <p className="brand-mark brand-mark--top">
+            알러지 인류를 위해, <strong>알러핏</strong>
+          </p>
+        )}
       </div>
-      {showLogo ? (
-        <p className="brand-mark brand-mark--top">
-          <span>A</span> AllerFit
-        </p>
-      ) : (
-        <strong>{title}</strong>
-      )}
+
+      <span className="app-top-bar__center-spacer" aria-hidden="true" />
+
       <div className="app-top-bar__side app-top-bar__side--right">
-        {action === 'settings' ? (
-          <button className="icon-button" type="button" aria-label="설정">
-            <Settings aria-hidden="true" size={19} />
-          </button>
-        ) : null}
-        {action === 'share' ? (
-          <button className="icon-button" type="button" aria-label="공유">
-            <Share2 aria-hidden="true" size={19} />
-          </button>
-        ) : null}
-        {action === 'skip' ? <span className="top-text-action">건너뛰기</span> : null}
+        <button
+          className="icon-button"
+          type="button"
+          aria-label="검색"
+          onClick={() => navigate("/search")}
+        >
+          <Search aria-hidden="true" size={19} />
+        </button>
+        <button
+          className="icon-button"
+          type="button"
+          aria-label="설정"
+          onClick={() => navigate("/settings/allergies")}
+        >
+          <Settings aria-hidden="true" size={19} />
+        </button>
       </div>
     </header>
   );

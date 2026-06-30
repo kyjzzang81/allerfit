@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AppTopBar } from "../../components/layout/AppTopBar";
 import { FoodVisual } from "../../components/ui/FoodVisual";
+import { LoadingSkeleton } from "../../components/ui/LoadingSkeleton";
 import { allergenOptions } from "../../constants/allergens";
 import { useSelectedAllergens } from "../allergies/useSelectedAllergens";
 import { useCatalogData } from "../catalog/useCatalogData";
@@ -18,9 +19,24 @@ function isMenuVisibleForAllergens(
   return !selectedCodes.some((code) => menuAllergens.includes(code));
 }
 
+function getEuRoParticle(text: string) {
+  const lastChar = [...text.trim()]
+    .reverse()
+    .find((char) => /[가-힣]/.test(char));
+
+  if (!lastChar) {
+    return "로";
+  }
+
+  const jongseongIndex = (lastChar.charCodeAt(0) - 0xac00) % 28;
+
+  return jongseongIndex === 0 || jongseongIndex === 8 ? "로" : "으로";
+}
+
 export function BrandPage() {
   const { brandSlug } = useParams();
   const [query, setQuery] = useState("");
+  const [isAllergyFiltered, setIsAllergyFiltered] = useState(true);
   const { selectedCodes } = useSelectedAllergens();
   const { brands, categories, menus, isLoading, error } = useCatalogData();
 
@@ -31,6 +47,7 @@ export function BrandPage() {
   const selectedNames = allergenOptions
     .filter((allergen) => selectedCodes.includes(allergen.code))
     .map((allergen) => allergen.displayName);
+  const selectedAllergenLabel = selectedNames.join(", ");
 
   const sortedLastCheckedDates = brandMenus
     .map((menu) => menu.lastCheckedAt)
@@ -43,10 +60,12 @@ export function BrandPage() {
 
     return brandMenus
       .filter((menu) =>
-        isMenuVisibleForAllergens(
-          [...menu.contains, ...menu.mayContain],
-          selectedCodes,
-        ),
+        isAllergyFiltered
+          ? isMenuVisibleForAllergens(
+              [...menu.contains, ...menu.mayContain],
+              selectedCodes,
+            )
+          : true,
       )
       .filter((menu) => {
         if (!keyword) {
@@ -56,18 +75,25 @@ export function BrandPage() {
         return menu.menuName.toLowerCase().includes(keyword);
       })
       .sort((a, b) => a.menuName.localeCompare(b.menuName, "ko"));
-  }, [brandMenus, query, selectedCodes]);
+  }, [brandMenus, isAllergyFiltered, query, selectedCodes]);
 
   if (!brand) {
     return (
-      <section className="page">
-        <div className="page-header">
-          <p className="eyebrow">브랜드</p>
-          <h1>브랜드를 찾을 수 없어요.</h1>
-        </div>
-        <Link className="button button--primary" to="/">
-          홈으로 돌아가기
-        </Link>
+      <section className="page brand-page">
+        <AppTopBar showBack title="브랜드" />
+        {isLoading ? (
+          <LoadingSkeleton variant="detail" count={1} />
+        ) : (
+          <>
+            <div className="page-header">
+              <p className="eyebrow">브랜드</p>
+              <h1>브랜드를 찾을 수 없어요.</h1>
+            </div>
+            <Link className="button button--primary" to="/">
+              홈으로 돌아가기
+            </Link>
+          </>
+        )}
       </section>
     );
   }
@@ -82,103 +108,107 @@ export function BrandPage() {
           className="brand-logo brand-logo--hero"
           aria-label={`${brand.name} 로고`}
         >
-          {brand.logoText}
+          {brand.logoUrl ? (
+            <img src={brand.logoUrl} alt="" loading="lazy" />
+          ) : (
+            brand.logoText
+          )}
         </span>
         <div className="brand-hero__copy">
           <h1>{brand.name}</h1>
           <p className="eyebrow">{category?.name ?? "브랜드"}</p>
-          <p>
-            ✨&nbsp;
-            {hasSelectedAllergens
-              ? `${selectedNames.join(", ")} 제외 기준으로 ${visibleMenus.length}개 메뉴가 있어요!`
-              : "알레르기 선택이 필요합니다."}
-          </p>
         </div>
       </div>
 
-      {!hasSelectedAllergens ? (
-        <div className="empty-action-panel">
-          <strong>알레르기 선택이 필요합니다.</strong>
-          <p>
-            내 알레르기를 선택하면 이 브랜드에서 먹을 수 있는 메뉴를
-            보여드릴게요.
-          </p>
-          <Link className="button button--primary" to="/settings/allergies">
-            내 알레르기 선택하기
-          </Link>
+      {isLoading ? (
+        <LoadingSkeleton variant="grid" count={4} />
+      ) : null}
+
+      {error ? (
+        <div className="empty-action-panel empty-action-panel--quiet">
+          <strong>DB 연결을 확인해주세요.</strong>
+          <p>실제 DB 데이터를 불러오지 못했어요.</p>
         </div>
-      ) : (
-        <>
-          {isLoading ? (
-            <div className="empty-action-panel empty-action-panel--quiet">
-              <strong>Supabase 데이터를 불러오는 중이에요.</strong>
-            </div>
-          ) : null}
+      ) : null}
 
-          {error ? (
-            <div className="empty-action-panel empty-action-panel--quiet">
-              <strong>DB 연결을 확인해주세요.</strong>
-              <p>현재는 임시 데이터로 표시하고 있어요.</p>
-            </div>
-          ) : null}
+      <div className="brand-control-stack">
+        <label className="filter-toggle-row">
+          <input
+            className="filter-toggle-row__input"
+            type="checkbox"
+            checked={isAllergyFiltered}
+            disabled={!hasSelectedAllergens}
+            onChange={(event) => setIsAllergyFiltered(event.target.checked)}
+          />
+          <span className="filter-toggle-row__text">
+            <strong>
+              {hasSelectedAllergens
+                ? `${selectedAllergenLabel}${getEuRoParticle(
+                    selectedAllergenLabel,
+                  )} 필터링`
+                : "알레르기 설정 후 필터링"}
+            </strong>
+          </span>
+          <span className="filter-toggle-row__control" aria-hidden="true">
+            <span />
+          </span>
+        </label>
 
-          <label className="search-box category-search">
-            <Search aria-hidden="true" size={22} />
-            <input
-              placeholder={`${brand.name} 메뉴 검색`}
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
+        <label className="search-box category-search brand-menu-search">
+          <Search aria-hidden="true" size={22} />
+          <input
+            placeholder={`${brand.name} 메뉴 검색`}
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </label>
+      </div>
 
-          {visibleMenus.length > 0 ? (
-            <div className="brand-menu-grid">
-              {visibleMenus.map((menu) => (
-                <Link
-                  className="brand-menu-card"
-                  key={menu.id}
-                  to={`/menu/${menu.id}`}
-                >
-                  <FoodVisual
-                    imageUrl={menu.imageUrl}
-                    label={menu.menuGraphicText}
-                    tone="warm"
-                    size="md"
-                  />
-                  <strong>{menu.menuName}</strong>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-action-panel empty-action-panel--quiet">
-              <strong>검색 결과가 없어요.</strong>
-              <p>다른 메뉴명으로 검색해보세요.</p>
-            </div>
-          )}
+      <div className="brand-list-heading">
+        <strong>{brand.name} 메뉴</strong>
+        <span>{visibleMenus.length}개</span>
+      </div>
 
-          <footer className="brand-info">
-            <p>
-              최종 업데이트 {lastUpdatedAt ? formatDate(lastUpdatedAt) : "-"}
-            </p>
-            <p>공식 알레르기 정보 기준</p>
-            <div className="brand-info__links">
-              <a
-                href={brand.allergenSourceUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                알레르기 정보 출처 보기
-                <ExternalLink aria-hidden="true" size={15} />
-              </a>
-              <a href={brand.officialUrl} target="_blank" rel="noreferrer">
-                공식 홈페이지 보기
-                <ExternalLink aria-hidden="true" size={15} />
-              </a>
-            </div>
-          </footer>
-        </>
-      )}
+      {visibleMenus.length > 0 ? (
+        <div className="brand-menu-grid">
+          {visibleMenus.map((menu) => (
+            <Link
+              className="brand-menu-card"
+              key={menu.id}
+              to={`/menu/${menu.id}`}
+            >
+              <FoodVisual
+                imageUrl={menu.imageUrl}
+                label={menu.menuGraphicText}
+                tone="warm"
+                size="md"
+              />
+              <strong>{menu.menuName}</strong>
+            </Link>
+          ))}
+        </div>
+      ) : !isLoading && !error ? (
+        <div className="empty-action-panel empty-action-panel--quiet">
+          <strong>검색 결과가 없어요.</strong>
+          <p>다른 메뉴명으로 검색해보세요.</p>
+        </div>
+      ) : null}
+
+      <footer className="brand-info">
+        <p>최종 업데이트 {lastUpdatedAt ? formatDate(lastUpdatedAt) : "-"}</p>
+        <p>공식 알레르기 정보 기준</p>
+        <div className="brand-info__links">
+          <a href={brand.allergenSourceUrl} target="_blank" rel="noreferrer">
+            알레르기 정보 출처 보기
+            <ExternalLink aria-hidden="true" size={15} />
+          </a>
+          <a href={brand.officialUrl} target="_blank" rel="noreferrer">
+            공식 홈페이지 보기
+            <ExternalLink aria-hidden="true" size={15} />
+          </a>
+        </div>
+      </footer>
     </section>
   );
 }

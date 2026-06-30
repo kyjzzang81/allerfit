@@ -1,13 +1,14 @@
-import { ExternalLink } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
-import { AppTopBar } from '../../components/layout/AppTopBar';
-import { FoodVisual } from '../../components/ui/FoodVisual';
-import { allergenOptions } from '../../constants/allergens';
-import { useSelectedAllergens } from '../allergies/useSelectedAllergens';
-import { useCatalogData } from '../catalog/useCatalogData';
+import { ExternalLink, ShieldCheck } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { AppTopBar } from "../../components/layout/AppTopBar";
+import { FoodVisual } from "../../components/ui/FoodVisual";
+import { LoadingSkeleton } from "../../components/ui/LoadingSkeleton";
+import { allergenOptions } from "../../constants/allergens";
+import { useSelectedAllergens } from "../allergies/useSelectedAllergens";
+import { useCatalogData } from "../catalog/useCatalogData";
 
 function formatDate(date: string) {
-  return date.replace(/-/g, '.');
+  return date.replace(/-/g, ".");
 }
 
 function getAllergenNames(codes: string[]) {
@@ -25,26 +26,22 @@ export function MenuPage() {
   const category = categories.find((item) => item.slug === menu?.categorySlug);
 
   if (!menu || !brand) {
-    if (isLoading) {
-      return (
-        <section className="page">
-          <AppTopBar showBack title="메뉴 상세" />
-          <div className="empty-action-panel empty-action-panel--quiet">
-            <strong>Supabase 데이터를 불러오는 중이에요.</strong>
-          </div>
-        </section>
-      );
-    }
-
     return (
       <section className="page">
-        <div className="page-header">
-          <p className="eyebrow">메뉴 상세</p>
-          <h1>메뉴를 찾을 수 없어요.</h1>
-        </div>
-        <Link className="button button--primary" to="/">
-          홈으로 돌아가기
-        </Link>
+        <AppTopBar showBack title="메뉴 상세" />
+        {isLoading ? (
+          <LoadingSkeleton variant="detail" count={1} />
+        ) : (
+          <>
+            <div className="page-header">
+              <p className="eyebrow">메뉴 상세</p>
+              <h1>메뉴를 찾을 수 없어요.</h1>
+            </div>
+            <Link className="button button--primary" to="/">
+              홈으로 돌아가기
+            </Link>
+          </>
+        )}
       </section>
     );
   }
@@ -57,13 +54,6 @@ export function MenuPage() {
   );
   const isAvoid = matchedContains.length > 0;
   const isCaution = !isAvoid && matchedMayContain.length > 0;
-  const statusTitle = selectedCodes.length === 0
-    ? '알레르기 선택이 필요합니다.'
-    : isAvoid
-      ? '피해야 하는 메뉴예요.'
-      : isCaution
-        ? '주의가 필요한 메뉴예요.'
-        : '공시 기준 선택 성분 없음';
 
   return (
     <section className="page menu-detail-page">
@@ -74,12 +64,17 @@ export function MenuPage() {
           label={menu.menuGraphicText}
           tone="warm"
           size="lg"
+          fetchPriority="high"
         />
-        <p className="eyebrow">{category?.name ?? '메뉴'} 메뉴</p>
-        <h1>{menu.menuName}</h1>
-        <Link className="text-link" to={`/brand/${brand.slug}`}>
-          {brand.name}
-        </Link>
+        <h2>{menu.menuName}</h2>
+        <div className="menu-detail-meta">
+          <Link to={`/brand/${brand.slug}`}>{brand.name}</Link>
+          <span>{category?.name ?? "메뉴"}</span>
+          <span>
+            <ShieldCheck aria-hidden="true" size={16} />
+            알레르기 공시
+          </span>
+        </div>
       </div>
 
       {selectedCodes.length === 0 ? (
@@ -92,27 +87,23 @@ export function MenuPage() {
         </div>
       ) : (
         <div className="detail-result-panel">
-          <p className="eyebrow">판정 결과</p>
-          <strong>{statusTitle}</strong>
-          <p>
-            {isAvoid
-              ? `${getAllergenNames(matchedContains).join(', ')} 성분이 포함되어 있어요.`
-              : isCaution
-                ? `${getAllergenNames(matchedMayContain).join(', ')} 혼입 가능성이 있어요.`
-                : '설정한 알레르기 성분은 공개 정보상 확인되지 않았어요.'}
-          </p>
+          {isAvoid
+            ? `⚠️ ${getAllergenNames(matchedContains).join(", ")} 성분이 포함되어 있어요.`
+            : isCaution
+              ? `${getAllergenNames(matchedMayContain).join(", ")} 혼입 가능성이 있어요.`
+              : "설정한 알레르기 성분은 공개 정보상 확인되지 않았어요."}
         </div>
       )}
 
       {error ? (
         <div className="empty-action-panel empty-action-panel--quiet">
           <strong>DB 연결을 확인해주세요.</strong>
-          <p>현재는 임시 데이터로 표시하고 있어요.</p>
+          <p>실제 DB 데이터를 불러오지 못했어요.</p>
         </div>
       ) : null}
 
       <div className="detail-section">
-        <h2>공시 성분</h2>
+        <h3>포함된 알레르기 성분</h3>
         <div className="detail-chip-list">
           {getAllergenNames(menu.contains).map((name) => (
             <span key={name}>{name}</span>
@@ -121,7 +112,7 @@ export function MenuPage() {
       </div>
 
       <div className="detail-section">
-        <h2>주의 가능 성분</h2>
+        <h3>주의 가능 성분</h3>
         {menu.mayContain.length > 0 ? (
           <div className="detail-chip-list">
             {getAllergenNames(menu.mayContain).map((name) => (

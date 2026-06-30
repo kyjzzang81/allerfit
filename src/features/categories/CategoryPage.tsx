@@ -1,14 +1,14 @@
-import { Search } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { AppTopBar } from '../../components/layout/AppTopBar';
-import { FoodVisual } from '../../components/ui/FoodVisual';
-import { allergenOptions } from '../../constants/allergens';
-import { useSelectedAllergens } from '../allergies/useSelectedAllergens';
-import { useCatalogData } from '../catalog/useCatalogData';
+import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { AppTopBar } from "../../components/layout/AppTopBar";
+import { FoodVisual } from "../../components/ui/FoodVisual";
+import { LoadingSkeleton } from "../../components/ui/LoadingSkeleton";
+import { useSelectedAllergens } from "../allergies/useSelectedAllergens";
+import { useCatalogData } from "../catalog/useCatalogData";
 
 function formatDate(date: string) {
-  return date.replace(/-/g, '.');
+  return date.replace(/-/g, ".");
 }
 
 function isMenuVisibleForAllergens(
@@ -20,16 +20,14 @@ function isMenuVisibleForAllergens(
 
 export function CategoryPage() {
   const { categorySlug } = useParams();
-  const [query, setQuery] = useState('');
-  const [selectedBrandSlug, setSelectedBrandSlug] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [selectedBrandSlug, setSelectedBrandSlug] = useState<string | null>(
+    null,
+  );
   const { selectedCodes } = useSelectedAllergens();
   const { brands, categories, menus, isLoading, error } = useCatalogData();
 
   const category = categories.find((item) => item.slug === categorySlug);
-
-  const selectedNames = allergenOptions
-    .filter((allergen) => selectedCodes.includes(allergen.code))
-    .map((allergen) => allergen.displayName);
 
   const categoryMenuList = useMemo(
     () => menus.filter((menu) => menu.categorySlug === category?.slug),
@@ -68,7 +66,8 @@ export function CategoryPage() {
   const sortedLastCheckedDates = categoryMenuList
     .map((menu) => menu.lastCheckedAt)
     .sort();
-  const lastUpdatedAt = sortedLastCheckedDates[sortedLastCheckedDates.length - 1];
+  const lastUpdatedAt =
+    sortedLastCheckedDates[sortedLastCheckedDates.length - 1];
 
   const visibleMenus = useMemo(() => {
     const keyword = query.trim().toLowerCase();
@@ -95,21 +94,28 @@ export function CategoryPage() {
       .sort((a, b) =>
         `${a.brandName} ${a.menuName}`.localeCompare(
           `${b.brandName} ${b.menuName}`,
-          'ko',
+          "ko",
         ),
       );
   }, [categoryMenuList, query, selectedBrandSlug, selectedCodes]);
 
   if (!category) {
     return (
-      <section className="page">
-        <div className="page-header">
-          <p className="eyebrow">카테고리</p>
-          <h1>카테고리를 찾을 수 없어요.</h1>
-        </div>
-        <Link className="button button--primary" to="/">
-          홈으로 돌아가기
-        </Link>
+      <section className="page category-page">
+        <AppTopBar showBack title="카테고리" />
+        {isLoading ? (
+          <LoadingSkeleton variant="cards" count={3} />
+        ) : (
+          <>
+            <div className="page-header">
+              <p className="eyebrow">카테고리</p>
+              <h1>카테고리를 찾을 수 없어요.</h1>
+            </div>
+            <Link className="button button--primary" to="/">
+              홈으로 돌아가기
+            </Link>
+          </>
+        )}
       </section>
     );
   }
@@ -119,13 +125,6 @@ export function CategoryPage() {
   return (
     <section className="page category-page">
       <AppTopBar showBack title={category.name} />
-      <div className="category-hero">
-        <p>
-          {hasSelectedAllergens
-            ? `${selectedNames.join(', ')} 제외 기준으로 먹을 수 있는 메뉴예요.`
-            : '알레르기 선택이 필요합니다.'}
-        </p>
-      </div>
 
       {!hasSelectedAllergens ? (
         <div className="empty-action-panel">
@@ -137,16 +136,12 @@ export function CategoryPage() {
         </div>
       ) : (
         <>
-          {isLoading ? (
-            <div className="empty-action-panel empty-action-panel--quiet">
-              <strong>Supabase 데이터를 불러오는 중이에요.</strong>
-            </div>
-          ) : null}
+          {isLoading ? <LoadingSkeleton variant="cards" count={4} /> : null}
 
           {error ? (
             <div className="empty-action-panel empty-action-panel--quiet">
               <strong>DB 연결을 확인해주세요.</strong>
-              <p>현재는 임시 데이터로 표시하고 있어요.</p>
+              <p>실제 DB 데이터를 불러오지 못했어요.</p>
             </div>
           ) : null}
 
@@ -171,7 +166,7 @@ export function CategoryPage() {
                 return (
                   <button
                     className={`brand-carousel__item${
-                      isSelected ? ' brand-carousel__item--selected' : ''
+                      isSelected ? " brand-carousel__item--selected" : ""
                     }`}
                     key={brand.slug}
                     type="button"
@@ -198,14 +193,18 @@ export function CategoryPage() {
             </p>
             <span>
               {categoryBrands.find((brand) => brand.slug === selectedBrandSlug)
-                ?.name ?? '브랜드'}
+                ?.name ?? "브랜드"}
             </span>
           </div>
 
           {visibleMenus.length > 0 ? (
             <div className="menu-card-grid">
               {visibleMenus.map((menu) => (
-                <Link className="menu-card" key={menu.id} to={`/brand/${menu.brandSlug}`}>
+                <Link
+                  className="menu-card"
+                  key={menu.id}
+                  to={`/brand/${menu.brandSlug}`}
+                >
                   <FoodVisual
                     imageUrl={menu.imageUrl}
                     label={menu.menuGraphicText}
@@ -213,21 +212,21 @@ export function CategoryPage() {
                     size="sm"
                   />
                   <span className="menu-card__text">
-                    <strong>{menu.brandName}</strong>
                     <span>{menu.menuName}</span>
+                    <strong>{menu.brandName}</strong>
                   </span>
                 </Link>
               ))}
             </div>
-          ) : (
+          ) : !isLoading && !error ? (
             <div className="empty-action-panel empty-action-panel--quiet">
               <strong>검색 결과가 없어요.</strong>
               <p>다른 메뉴명이나 브랜드명으로 검색해보세요.</p>
             </div>
-          )}
+          ) : null}
 
           <p className="category-updated">
-            최종 업데이트 {lastUpdatedAt ? formatDate(lastUpdatedAt) : '-'}
+            최종 업데이트 {lastUpdatedAt ? formatDate(lastUpdatedAt) : "-"}
           </p>
         </>
       )}

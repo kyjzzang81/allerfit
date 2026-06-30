@@ -49,6 +49,12 @@ const mockCatalog: CatalogData = {
   menus: mockMenus,
 };
 
+const emptyCatalog: CatalogData = {
+  categories: [],
+  brands: [],
+  menus: [],
+};
+
 function getCategoryDescription(slug: string, name: string) {
   const existingDescription = mockCategories.find(
     (category) => category.slug === slug,
@@ -181,15 +187,16 @@ function mapCatalogData(
 }
 
 export function useCatalogData(): CatalogState {
+  const hasSupabaseConfig = isSupabaseConfigured();
   const [state, setState] = useState<CatalogState>({
-    ...mockCatalog,
-    isLoading: isSupabaseConfigured(),
+    ...(hasSupabaseConfig ? emptyCatalog : mockCatalog),
+    isLoading: hasSupabaseConfig,
     error: null,
-    source: 'mock',
+    source: hasSupabaseConfig ? 'supabase' : 'mock',
   });
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) {
+    if (!hasSupabaseConfig) {
       setState({
         ...mockCatalog,
         isLoading: false,
@@ -231,10 +238,10 @@ export function useCatalogData(): CatalogState {
       } catch (error) {
         if (isMounted) {
           setState({
-            ...mockCatalog,
+            ...emptyCatalog,
             isLoading: false,
             error: error instanceof Error ? error : new Error(String(error)),
-            source: 'mock',
+            source: 'supabase',
           });
         }
       }
@@ -245,7 +252,7 @@ export function useCatalogData(): CatalogState {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [hasSupabaseConfig]);
 
   return useMemo(() => state, [state]);
 }

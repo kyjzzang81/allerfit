@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AppTopBar } from '../../components/layout/AppTopBar';
 import { FoodVisual } from '../../components/ui/FoodVisual';
+import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { useCatalogData } from '../catalog/useCatalogData';
 
 export function SearchPage() {
@@ -47,15 +48,13 @@ export function SearchPage() {
       </label>
 
       {isLoading ? (
-        <div className="content-card empty-card">
-          <strong>Supabase 데이터를 불러오는 중이에요.</strong>
-        </div>
+        <LoadingSkeleton variant="cards" count={3} />
       ) : null}
 
       {error ? (
         <div className="content-card empty-card">
           <strong>DB 연결을 확인해주세요.</strong>
-          <p>현재는 임시 데이터로 검색하고 있어요.</p>
+          <p>실제 DB 데이터를 불러오지 못했어요.</p>
         </div>
       ) : null}
 

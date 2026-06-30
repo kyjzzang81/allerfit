@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "import:bbq-menus": "node scripts/import-bbq-menus.mjs",
+    "import:hosigi-menus": "node scripts/import-hosigi-menus.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.4",

@@ -3,12 +3,13 @@ import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AppTopBar } from '../../components/layout/AppTopBar';
 import { FoodVisual } from '../../components/ui/FoodVisual';
+import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { useCatalogData } from '../catalog/useCatalogData';
 
 export function CategorySearchPage() {
   const { categorySlug } = useParams();
   const [query, setQuery] = useState('');
-  const { categories, menus, isLoading } = useCatalogData();
+  const { categories, menus, isLoading, error } = useCatalogData();
   const category = categories.find((item) => item.slug === categorySlug);
 
   const results = useMemo(() => {
@@ -35,11 +36,16 @@ export function CategorySearchPage() {
 
   if (!category) {
     return (
-      <section className="page">
-        <div className="page-header">
-          <p className="eyebrow">검색</p>
-          <h1>카테고리를 찾을 수 없어요.</h1>
-        </div>
+      <section className="page category-page">
+        <AppTopBar showBack title="검색 결과" />
+        {isLoading ? (
+          <LoadingSkeleton variant="cards" count={3} />
+        ) : (
+          <div className="page-header">
+            <p className="eyebrow">검색</p>
+            <h1>카테고리를 찾을 수 없어요.</h1>
+          </div>
+        )}
       </section>
     );
   }
@@ -65,8 +71,13 @@ export function CategorySearchPage() {
 
       <div className="menu-card-grid">
         {isLoading ? (
+          <LoadingSkeleton variant="cards" count={3} />
+        ) : null}
+
+        {error ? (
           <div className="empty-action-panel empty-action-panel--quiet">
-            <strong>Supabase 데이터를 불러오는 중이에요.</strong>
+            <strong>DB 연결을 확인해주세요.</strong>
+            <p>실제 DB 데이터를 불러오지 못했어요.</p>
           </div>
         ) : null}
 

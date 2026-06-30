@@ -1,4 +1,5 @@
 import { AppTopBar } from '../../components/layout/AppTopBar';
+import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { completeOnboarding } from '../../lib/storage';
 import { useAllergenOptions } from './useAllergenOptions';
 import { useSelectedAllergens } from './useSelectedAllergens';
@@ -48,15 +49,13 @@ export function AllergiesPage() {
 
       <div className="allergen-grid" role="list">
         {isLoading ? (
-          <div className="empty-action-panel empty-action-panel--quiet">
-            <strong>Supabase 데이터를 불러오는 중이에요.</strong>
-          </div>
+          <LoadingSkeleton variant="grid" count={6} />
         ) : null}
 
         {error ? (
           <div className="empty-action-panel empty-action-panel--quiet">
             <strong>DB 연결을 확인해주세요.</strong>
-            <p>현재는 임시 성분 목록으로 표시하고 있어요.</p>
+            <p>실제 DB 성분 목록을 불러오지 못했어요.</p>
           </div>
         ) : null}
 
