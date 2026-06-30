@@ -1071,16 +1071,20 @@ h1 {
   transform: scale(0.96);
 }
 
+.menu-card--unavailable {
+  opacity: 0.35;
+}
+
 .category-page .menu-card-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .category-page .menu-card {
   grid-template-columns: 1fr;
   align-content: start;
   align-items: start;
-  gap: 10px;
+  gap: 8px;
   min-height: 184px;
   padding: 12px;
 }

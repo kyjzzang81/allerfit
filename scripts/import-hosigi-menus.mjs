@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { getMenuType } from './menu-type.mjs';
 
 const ROOT = process.cwd();
 const BRAND_SLUG = 'hosigi';
@@ -330,6 +331,14 @@ async function collect() {
         brand: BRAND_SLUG,
         brandName: BRAND_NAME,
         ...item,
+        sourceCategory: item.pageSlug,
+        sourceCategoryName: item.pageName,
+        menuType: getMenuType({
+          brandCategorySlug: 'chicken',
+          menuCategorySlug: 'chicken',
+          sourceCategory: item.pageSlug,
+          menuName: item.menuName,
+        }),
         sourceAllergenUrl: 'https://www.9922.co.kr/allergenic-component',
         localImagePath,
         allergy,
@@ -446,6 +455,7 @@ async function importToSupabase(records) {
               name: record.menuName,
               description: record.description,
               image_url: imageUrl,
+              menu_type: record.menuType,
               menu_status: 'active',
               source_url: record.sourceProductUrl,
               last_checked_at: CHECKED_AT,
@@ -465,6 +475,7 @@ async function importToSupabase(records) {
         .update({
           description: record.description,
           image_url: imageUrl,
+          menu_type: record.menuType,
           source_url: record.sourceProductUrl,
           last_checked_at: CHECKED_AT,
           is_active: true,

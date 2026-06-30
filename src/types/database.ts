@@ -145,6 +145,7 @@ export interface Database {
           name: string;
           description: string | null;
           image_url: string | null;
+          menu_type: 1 | 2 | 3;
           menu_status: 'active' | 'seasonal' | 'discontinued' | 'unknown';
           source_url: string | null;
           last_checked_at: string | null;
@@ -160,6 +161,7 @@ export interface Database {
           name: string;
           description?: string | null;
           image_url?: string | null;
+          menu_type?: Database['public']['Tables']['menus']['Row']['menu_type'];
           menu_status?: Database['public']['Tables']['menus']['Row']['menu_status'];
           source_url?: string | null;
           last_checked_at?: string | null;
@@ -177,6 +179,7 @@ export interface Database {
           menu_name: string | null;
           menu_slug: string | null;
           image_url: string | null;
+          menu_type: 1 | 2 | 3 | null;
           category_id: string | null;
           category_slug: string | null;
           category_name: string | null;

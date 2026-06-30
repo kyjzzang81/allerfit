@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { getMenuType } from './menu-type.mjs';
 
 const ROOT = process.cwd();
 const DATA_FILE = path.join(ROOT, 'datas', 'menu_bbq.json');
@@ -56,6 +57,15 @@ function toCategorySlug(menu) {
   }
 
   return 'chicken';
+}
+
+function toMenuType(menu) {
+  return getMenuType({
+    brandCategorySlug: 'chicken',
+    menuCategorySlug: toCategorySlug(menu),
+    sourceCategoryId: menu.sourceCategoryId,
+    menuName: menu.menuName,
+  });
 }
 
 function normalizeAllergen(value) {
@@ -237,6 +247,7 @@ async function main() {
             name: menu.menuName,
             description: menu.description,
             image_url: imageUrl,
+            menu_type: toMenuType(menu),
             menu_status: menu.isSoldOut ? 'unknown' : 'active',
             source_url: menu.sourceProductUrl,
             last_checked_at: CHECKED_AT,

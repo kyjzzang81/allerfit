@@ -9,7 +9,14 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "import:bbq-menus": "node scripts/import-bbq-menus.mjs",
-    "import:hosigi-menus": "node scripts/import-hosigi-menus.mjs"
+    "import:hosigi-menus": "node scripts/import-hosigi-menus.mjs",
+    "import:dominos-menus": "node scripts/import-dominos-menus.mjs",
+    "import:pizzahut-menus": "node scripts/import-pizzahut-menus.mjs",
+    "import:seooreung-menus": "node scripts/import-seooreung-menus.mjs",
+    "import:bhc-menus": "node scripts/import-bhc-menus.mjs",
+    "import:kyochon-menus": "node scripts/import-kyochon-menus.mjs",
+    "import:60chicken-menus": "node scripts/import-60chicken-menus.mjs",
+    "import:goobne-menus": "node scripts/import-goobne-menus.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.4",

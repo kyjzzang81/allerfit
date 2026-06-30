@@ -5,6 +5,7 @@ import { AppTopBar } from '../../components/layout/AppTopBar';
 import { FoodVisual } from '../../components/ui/FoodVisual';
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { useCatalogData } from '../catalog/useCatalogData';
+import { compareMenusForDisplay } from '../catalog/menuOrdering';
 
 export function SearchPage() {
   const [query, setQuery] = useState('');
@@ -21,12 +22,7 @@ export function SearchPage() {
       .filter((menu) =>
         `${menu.brandName} ${menu.menuName}`.toLowerCase().includes(keyword),
       )
-      .sort((a, b) =>
-        `${a.brandName} ${a.menuName}`.localeCompare(
-          `${b.brandName} ${b.menuName}`,
-          'ko',
-        ),
-      );
+      .sort(compareMenusForDisplay);
   }, [menus, query]);
 
   return (

@@ -13,6 +13,7 @@ export interface CategoryMenu {
   brandLogoText: string;
   menuName: string;
   menuGraphicText: string;
+  menuSortOrder?: number;
   imageUrl?: string | null;
   contains: string[];
   mayContain: string[];

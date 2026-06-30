@@ -15,6 +15,7 @@ import {
   type CategoryInfo,
   type CategoryMenu,
 } from '../categories/categoryData';
+import { inferMenuType } from './menuOrdering';
 
 interface CatalogData {
   categories: CategoryInfo[];
@@ -167,6 +168,10 @@ function mapCatalogData(
         brandName: menu.brand_name ?? '브랜드',
         brandLogoText: getBrandLogoText(menu.brand_name ?? '브랜드'),
         menuName: menu.menu_name ?? '메뉴',
+        menuSortOrder: menu.menu_type ?? inferMenuType(
+          menu.category_slug ?? 'chicken',
+          menu.menu_name ?? '',
+        ),
         menuGraphicText: getMenuGraphicText(
           menu.category_slug,
           menu.menu_name ?? '',

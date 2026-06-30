@@ -7,6 +7,7 @@ import { LoadingSkeleton } from "../../components/ui/LoadingSkeleton";
 import { allergenOptions } from "../../constants/allergens";
 import { useSelectedAllergens } from "../allergies/useSelectedAllergens";
 import { useCatalogData } from "../catalog/useCatalogData";
+import { compareMenusForDisplay } from "../catalog/menuOrdering";
 
 function formatDate(date: string) {
   return date.replace(/-/g, ".");
@@ -59,14 +60,6 @@ export function BrandPage() {
     const keyword = query.trim().toLowerCase();
 
     return brandMenus
-      .filter((menu) =>
-        isAllergyFiltered
-          ? isMenuVisibleForAllergens(
-              [...menu.contains, ...menu.mayContain],
-              selectedCodes,
-            )
-          : true,
-      )
       .filter((menu) => {
         if (!keyword) {
           return true;
@@ -74,8 +67,8 @@ export function BrandPage() {
 
         return menu.menuName.toLowerCase().includes(keyword);
       })
-      .sort((a, b) => a.menuName.localeCompare(b.menuName, "ko"));
-  }, [brandMenus, isAllergyFiltered, query, selectedCodes]);
+      .sort(compareMenusForDisplay);
+  }, [brandMenus, query]);
 
   if (!brand) {
     return (
@@ -172,21 +165,33 @@ export function BrandPage() {
 
       {visibleMenus.length > 0 ? (
         <div className="brand-menu-grid">
-          {visibleMenus.map((menu) => (
-            <Link
-              className="brand-menu-card"
-              key={menu.id}
-              to={`/menu/${menu.id}`}
-            >
-              <FoodVisual
-                imageUrl={menu.imageUrl}
-                label={menu.menuGraphicText}
-                tone="warm"
-                size="md"
-              />
-              <strong>{menu.menuName}</strong>
-            </Link>
-          ))}
+          {visibleMenus.map((menu) => {
+            const isUnavailable =
+              isAllergyFiltered &&
+              hasSelectedAllergens &&
+              !isMenuVisibleForAllergens(
+                [...menu.contains, ...menu.mayContain],
+                selectedCodes,
+              );
+
+            return (
+              <Link
+                className={`brand-menu-card${
+                  isUnavailable ? " menu-card--unavailable" : ""
+                }`}
+                key={menu.id}
+                to={`/menu/${menu.id}`}
+              >
+                <FoodVisual
+                  imageUrl={menu.imageUrl}
+                  label={menu.menuGraphicText}
+                  tone="warm"
+                  size="md"
+                />
+                <strong>{menu.menuName}</strong>
+              </Link>
+            );
+          })}
         </div>
       ) : !isLoading && !error ? (
         <div className="empty-action-panel empty-action-panel--quiet">
