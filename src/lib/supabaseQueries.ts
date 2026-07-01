@@ -1,4 +1,7 @@
 import { supabase } from './supabase';
+import type { Database } from '../types/database';
+
+type CategoryRow = Database['public']['Tables']['categories']['Row'];
 
 interface MenuAllergenCodeRow {
   menu_id: string | null;
@@ -52,12 +55,22 @@ export async function fetchBrands(categorySlug?: string) {
   const client = requireSupabase();
   let query = client
     .from('brands')
-    .select('*, categories!inner(slug, name)')
+    .select('*')
     .eq('is_active', true)
     .order('display_order');
 
   if (categorySlug) {
-    query = query.eq('categories.slug', categorySlug);
+    const { data: category, error: categoryError } = await client
+      .from('categories')
+      .select('id')
+      .eq('slug', categorySlug)
+      .single();
+
+    if (categoryError) {
+      throw categoryError;
+    }
+
+    query = query.eq('category_id', (category as CategoryRow).id);
   }
 
   const { data, error } = await query;
@@ -141,6 +154,7 @@ export async function fetchMenuAllergenCodes(menuIds: string[]) {
   const pageSize = 1000;
   let from = 0;
   const rows: MenuAllergenCodeRow[] = [];
+  const menuIdSet = new Set(menuIds);
 
   while (true) {
     const { data, error } = await client
@@ -154,14 +168,17 @@ export async function fetchMenuAllergenCodes(menuIds: string[]) {
         )
       `,
       )
-      .in('menu_id', menuIds)
       .range(from, from + pageSize - 1);
 
     if (error) {
       throw error;
     }
 
-    rows.push(...(data as MenuAllergenCodeRow[]));
+    rows.push(
+      ...(data as MenuAllergenCodeRow[]).filter(
+        (row) => row.menu_id && menuIdSet.has(row.menu_id),
+      ),
+    );
 
     if (data.length < pageSize) {
       break;

@@ -8,6 +8,11 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
+    "cap:sync": "npm run build && cap sync",
+    "cap:add:ios": "cap add ios",
+    "cap:add:android": "cap add android",
+    "cap:open:ios": "cap open ios",
+    "cap:open:android": "cap open android",
     "import:bbq-menus": "node scripts/import-bbq-menus.mjs",
     "import:hosigi-menus": "node scripts/import-hosigi-menus.mjs",
     "import:dominos-menus": "node scripts/import-dominos-menus.mjs",
@@ -16,10 +21,18 @@
     "import:bhc-menus": "node scripts/import-bhc-menus.mjs",
     "import:kyochon-menus": "node scripts/import-kyochon-menus.mjs",
     "import:60chicken-menus": "node scripts/import-60chicken-menus.mjs",
-    "import:goobne-menus": "node scripts/import-goobne-menus.mjs"
+    "import:goobne-menus": "node scripts/import-goobne-menus.mjs",
+    "import:nuguna-banhandak-menus": "node scripts/import-nuguna-banhandak-menus.mjs",
+    "import:kkanbu-menus": "node scripts/import-kkanbu-menus.mjs",
+    "import:puradak-menus": "node scripts/import-puradak-menus.mjs",
+    "import:norangtongdak-menus": "node scripts/import-norangtongdak-menus.mjs",
+    "optimize:menu-images": "node scripts/optimize-menu-images.mjs",
+    "optimize:menu-images:apply": "node scripts/optimize-menu-images.mjs --apply"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.7",
     "@capacitor/core": "^7.4.4",
+    "@capacitor/ios": "^7.6.7",
     "@supabase/supabase-js": "^2.52.1",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
@@ -38,6 +51,7 @@
     "globals": "^15.14.0",
     "typescript": "~5.6.3",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vite-plugin-pwa": "^1.3.0"
   }
 }

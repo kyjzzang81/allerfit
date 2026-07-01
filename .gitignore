@@ -1,5 +1,6 @@
 node_modules
 dist
+.npm-cache
 assets/brands/
 assets/menus/
 .DS_Store

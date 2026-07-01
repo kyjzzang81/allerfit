@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { AppTopBar } from '../../components/layout/AppTopBar';
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { completeOnboarding } from '../../lib/storage';
@@ -26,9 +27,39 @@ const allergenGraphics: Record<string, string> = {
 };
 
 export function AllergiesPage() {
-  const { selectedCodes, selectedCodeSet, toggleAllergen } =
-    useSelectedAllergens();
+  const { selectedCodes, saveAllergens } = useSelectedAllergens();
+  const [draftCodes, setDraftCodes] = useState<string[]>(selectedCodes);
+  const [isSaving, setIsSaving] = useState(false);
   const { allergenOptions, isLoading, error } = useAllergenOptions();
+  const draftCodeSet = useMemo(() => new Set(draftCodes), [draftCodes]);
+  const hasChanges =
+    draftCodes.length !== selectedCodes.length ||
+    draftCodes.some((code) => !selectedCodes.includes(code));
+
+  useEffect(() => {
+    if (!hasChanges) {
+      setDraftCodes(selectedCodes);
+    }
+  }, [hasChanges, selectedCodes]);
+
+  function toggleDraftAllergen(code: string) {
+    setDraftCodes((current) =>
+      current.includes(code)
+        ? current.filter((item) => item !== code)
+        : [...current, code],
+    );
+  }
+
+  async function saveSelection() {
+    setIsSaving(true);
+
+    try {
+      await saveAllergens(draftCodes);
+      completeOnboarding();
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
     <section className="page allergies-page">
@@ -42,7 +73,7 @@ export function AllergiesPage() {
           선택한 성분은 이 기기에 저장되고, 메뉴 판정 기준으로 사용됩니다.
         </p>
         <div className="selection-summary" aria-live="polite">
-          <span>{selectedCodes.length}</span>
+          <span>{draftCodes.length}</span>
           <strong>선택한 성분</strong>
         </div>
       </div>
@@ -60,13 +91,13 @@ export function AllergiesPage() {
         ) : null}
 
         {allergenOptions.map((allergen) => {
-          const isSelected = selectedCodeSet.has(allergen.code);
+          const isSelected = draftCodeSet.has(allergen.code);
 
           return (
             <button
               className={`allergen-chip${isSelected ? ' allergen-chip--selected' : ''}`}
               key={allergen.code}
-              onClick={() => toggleAllergen(allergen.code)}
+              onClick={() => toggleDraftAllergen(allergen.code)}
               type="button"
               aria-pressed={isSelected}
             >
@@ -85,15 +116,20 @@ export function AllergiesPage() {
         })}
       </div>
 
-      <button
-        className="button button--primary save-button"
-        onClick={completeOnboarding}
-        type="button"
-      >
-        {selectedCodes.length > 0
-          ? `${selectedCodes.length}개 성분 저장됨`
-          : '선택 없이 시작하기'}
-      </button>
+      <div className="fixed-save-bar">
+        <button
+          className="button button--primary save-button"
+          disabled={isSaving || !hasChanges}
+          onClick={saveSelection}
+          type="button"
+        >
+          {isSaving
+            ? '저장 중'
+            : draftCodes.length > 0
+              ? `${draftCodes.length}개 성분 저장하기`
+              : '선택 없이 저장하기'}
+        </button>
+      </div>
     </section>
   );
 }

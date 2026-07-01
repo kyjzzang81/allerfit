@@ -1,15 +1,17 @@
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { AppTopBar } from '../../components/layout/AppTopBar';
 import { FoodVisual } from '../../components/ui/FoodVisual';
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { useCatalogData } from '../catalog/useCatalogData';
 import { compareMenusForDisplay } from '../catalog/menuOrdering';
+import { MenuDetailSheet } from '../menus/MenuDetailSheet';
 
 export function CategorySearchPage() {
   const { categorySlug } = useParams();
   const [query, setQuery] = useState('');
+  const [selectedMenuSlug, setSelectedMenuSlug] = useState<string | null>(null);
   const { categories, menus, isLoading, error } = useCatalogData();
   const category = categories.find((item) => item.slug === categorySlug);
 
@@ -78,7 +80,12 @@ export function CategorySearchPage() {
         ) : null}
 
         {results.map((menu) => (
-          <Link className="menu-card" key={menu.id} to={`/brand/${menu.brandSlug}`}>
+          <button
+            className="menu-card"
+            key={menu.id}
+            type="button"
+            onClick={() => setSelectedMenuSlug(menu.id)}
+          >
             <FoodVisual
               imageUrl={menu.imageUrl}
               label={menu.menuGraphicText}
@@ -89,9 +96,13 @@ export function CategorySearchPage() {
               <strong>{menu.brandName}</strong>
               <span>{menu.menuName}</span>
             </span>
-          </Link>
+          </button>
         ))}
       </div>
+      <MenuDetailSheet
+        menuSlug={selectedMenuSlug}
+        onClose={() => setSelectedMenuSlug(null)}
+      />
     </section>
   );
 }

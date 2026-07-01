@@ -56,6 +56,9 @@ const emptyCatalog: CatalogData = {
   menus: [],
 };
 
+let catalogCache: CatalogData | null = null;
+let catalogLoadPromise: Promise<CatalogData> | null = null;
+
 function getCategoryDescription(slug: string, name: string) {
   const existingDescription = mockCategories.find(
     (category) => category.slug === slug,
@@ -191,13 +194,48 @@ function mapCatalogData(
   };
 }
 
+async function loadCatalogFromSupabase() {
+  if (catalogCache) {
+    return catalogCache;
+  }
+
+  catalogLoadPromise ??= (async () => {
+    const [categories, brands, menus] = await Promise.all([
+      fetchCategories(),
+      fetchBrands(),
+      fetchMenus(),
+    ]);
+    const typedMenus = menus as SupabaseMenu[];
+    const menuIds = typedMenus
+      .map((menu) => menu.menu_id)
+      .filter((menuId): menuId is string => Boolean(menuId));
+    const menuAllergens = await fetchMenuAllergenCodes(menuIds);
+    const catalog = mapCatalogData(
+      categories as SupabaseCategory[],
+      brands as SupabaseBrand[],
+      typedMenus,
+      menuAllergens as SupabaseMenuAllergen[],
+    );
+
+    catalogCache = catalog;
+    return catalog;
+  })();
+
+  try {
+    return await catalogLoadPromise;
+  } catch (error) {
+    catalogLoadPromise = null;
+    throw error;
+  }
+}
+
 export function useCatalogData(): CatalogState {
   const hasSupabaseConfig = isSupabaseConfigured();
   const [state, setState] = useState<CatalogState>({
-    ...(hasSupabaseConfig ? emptyCatalog : mockCatalog),
-    isLoading: hasSupabaseConfig,
+    ...(catalogCache ?? (hasSupabaseConfig ? emptyCatalog : mockCatalog)),
+    isLoading: hasSupabaseConfig && !catalogCache,
     error: null,
-    source: hasSupabaseConfig ? 'supabase' : 'mock',
+    source: catalogCache ? 'supabase' : hasSupabaseConfig ? 'supabase' : 'mock',
   });
 
   useEffect(() => {
@@ -215,22 +253,7 @@ export function useCatalogData(): CatalogState {
 
     async function loadCatalog() {
       try {
-        const [categories, brands, menus] = await Promise.all([
-          fetchCategories(),
-          fetchBrands(),
-          fetchMenus(),
-        ]);
-        const typedMenus = menus as SupabaseMenu[];
-        const menuIds = typedMenus
-          .map((menu) => menu.menu_id)
-          .filter((menuId): menuId is string => Boolean(menuId));
-        const menuAllergens = await fetchMenuAllergenCodes(menuIds);
-        const catalog = mapCatalogData(
-          categories as SupabaseCategory[],
-          brands as SupabaseBrand[],
-          typedMenus,
-          menuAllergens as SupabaseMenuAllergen[],
-        );
+        const catalog = await loadCatalogFromSupabase();
 
         if (isMounted) {
           setState({
@@ -241,12 +264,14 @@ export function useCatalogData(): CatalogState {
           });
         }
       } catch (error) {
+        console.error('Failed to load Supabase catalog.', error);
+
         if (isMounted) {
           setState({
-            ...emptyCatalog,
+            ...mockCatalog,
             isLoading: false,
-            error: error instanceof Error ? error : new Error(String(error)),
-            source: 'supabase',
+            error: null,
+            source: 'mock',
           });
         }
       }

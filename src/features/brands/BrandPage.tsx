@@ -8,6 +8,7 @@ import { allergenOptions } from "../../constants/allergens";
 import { useSelectedAllergens } from "../allergies/useSelectedAllergens";
 import { useCatalogData } from "../catalog/useCatalogData";
 import { compareMenusForDisplay } from "../catalog/menuOrdering";
+import { MenuDetailSheet } from "../menus/MenuDetailSheet";
 
 function formatDate(date: string) {
   return date.replace(/-/g, ".");
@@ -38,6 +39,7 @@ export function BrandPage() {
   const { brandSlug } = useParams();
   const [query, setQuery] = useState("");
   const [isAllergyFiltered, setIsAllergyFiltered] = useState(true);
+  const [selectedMenuSlug, setSelectedMenuSlug] = useState<string | null>(null);
   const { selectedCodes } = useSelectedAllergens();
   const { brands, categories, menus, isLoading, error } = useCatalogData();
 
@@ -175,12 +177,13 @@ export function BrandPage() {
               );
 
             return (
-              <Link
+              <button
                 className={`brand-menu-card${
                   isUnavailable ? " menu-card--unavailable" : ""
                 }`}
                 key={menu.id}
-                to={`/menu/${menu.id}`}
+                type="button"
+                onClick={() => setSelectedMenuSlug(menu.id)}
               >
                 <FoodVisual
                   imageUrl={menu.imageUrl}
@@ -189,7 +192,7 @@ export function BrandPage() {
                   size="md"
                 />
                 <strong>{menu.menuName}</strong>
-              </Link>
+              </button>
             );
           })}
         </div>
@@ -214,6 +217,10 @@ export function BrandPage() {
           </a>
         </div>
       </footer>
+      <MenuDetailSheet
+        menuSlug={selectedMenuSlug}
+        onClose={() => setSelectedMenuSlug(null)}
+      />
     </section>
   );
 }

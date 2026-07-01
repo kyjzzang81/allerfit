@@ -11,12 +11,18 @@ export function FixedAllergenCard() {
     .filter((allergen) => selectedCodes.includes(allergen.code))
     .map((allergen) => allergen.displayName);
   const hasBottomNav = bottomNavPaths.has(pathname);
+  const hasFixedSaveBar = pathname === "/settings/allergies";
+  const className = [
+    "fixed-allergen-card",
+    hasBottomNav ? "fixed-allergen-card--above-nav" : "",
+    hasFixedSaveBar ? "fixed-allergen-card--above-save" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <aside
-      className={`fixed-allergen-card${
-        hasBottomNav ? " fixed-allergen-card--above-nav" : ""
-      }`}
+      className={className}
       aria-label="내가 선택한 알레르기 성분"
     >
       <Link to="/settings/allergies">

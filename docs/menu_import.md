@@ -5,9 +5,12 @@
 ## 공통 원칙
 
 - 원본 데이터는 `datas/menu_{brand}.json`에 저장한다.
-- 로컬 이미지는 `public/assets/menus/{brand-slug}/{englishName}.png`에 저장한다.
-- Supabase Storage는 `menus/{brand-slug}/{englishName}.png` 경로를 사용한다.
-- Storage bucket `menus`가 private이면 importer에서 장기 signed URL을 만들어 `menus.image_url`에 저장한다.
+- importer가 받은 로컬 원본 이미지는 `public/assets/menus/{brand-slug}/{englishName}.png`에 저장한다.
+- import 직후 `npm run optimize:menu-images:apply -- --brand={brand-slug}`를 실행해 WebP 최적화본을 생성하고 Storage/DB를 갱신한다.
+- 최적화본은 긴 변 1200px, quality 80의 WebP로 `public/assets/menus-optimized/{brand-slug}/{englishName}.webp`와 Storage `menus/{brand-slug}/{englishName}.webp`에 저장한다.
+- 카드 썸네일은 긴 변 480px, quality 75의 WebP로 `public/assets/menus-optimized/{brand-slug}/thumbs/{englishName}.webp`와 Storage `menus/{brand-slug}/thumbs/{englishName}.webp`에 저장한다.
+- 현재 `menus.image_url`은 1200px WebP 최적화본 signed URL을 저장한다. 썸네일은 Storage path 규칙으로 생성되어 있으며, 앱에서 별도 사용하려면 `thumbnail_url` 컬럼 추가 또는 경로 기반 signed URL 발급 로직을 붙인다.
+- Storage bucket `menus`가 private이면 importer와 optimizer에서 장기 signed URL을 만들어 `menus.image_url`에 저장한다.
 - Supabase import는 service role key로 실행한다. 현재 로컬 환경에서는 `.env.local`의 `VITE_SUPABASE_SERVICE_ROLE_KEY`를 importer가 읽는다.
 - DB 반영 후 브랜드는 `brands.data_status = official_verified`, `brands.last_checked_at = YYYY-MM-DD`로 갱신한다.
 - 메뉴 알레르기 정보는 `menu_allergens`에 `presence_type = contains`로 넣는다.
@@ -21,7 +24,8 @@
 2. Supabase Storage bucket `menus`가 있는지 확인한다.
 3. 브랜드 row와 카테고리 row가 있는지 확인한다. importer에 upsert가 있으면 브랜드는 자동 생성 가능하다.
 4. 수집 대상 공식 페이지가 변경되지 않았는지 브라우저나 간단한 fetch로 확인한다.
-5. import 후 `npm run build`로 타입과 빌드를 확인한다.
+5. import 후 `npm run optimize:menu-images:apply -- --brand={brand-slug}`로 Storage 이미지를 WebP 최적화본으로 갱신한다.
+6. `npm run build`로 타입과 빌드를 확인한다.
 
 ## 공통 검증
 
@@ -33,7 +37,8 @@
 - Supabase `menus` 활성 메뉴 수
 - 활성 메뉴 중 `image_url`이 있는 메뉴 수
 - Supabase `menu_allergens` row 수
-- Storage `menus/{brand-slug}` PNG 수
+- Storage `menus/{brand-slug}` WebP 수
+- `menus.image_url`이 `.webp` 최적화본을 가리키는지 여부
 - `menu_type` 분포와 주메뉴/보조메뉴/사이드메뉴 정렬 상태
 
 ## BBQ
@@ -205,6 +210,29 @@
   - 공식 페이지에 메뉴별 고유 ID가 없으므로 화면 순서 기반 `60chicken-001` 형식의 slug와 이미지 파일명을 사용한다.
   - 원본 이미지가 JPG/PNG 혼재라 로컬 저장 시 PNG로 변환한다.
 
+## 푸라닭
+
+- 브랜드 slug: `puradak`
+- 스크립트: `npm run import:puradak-menus`
+- 데이터 파일: `datas/menu_puradak.json`
+- 이미지 경로: `public/assets/menus/puradak`
+- Storage 경로: `menus/puradak`
+- 목록 URL:
+  - `https://puradakchicken.com/menu/product.asp?sermode=0`
+  - `https://puradakchicken.com/menu/product.asp?sermode=1`
+- 알레르기 출처:
+  - 첨부 이미지 `푸라닭 치킨 알레르기 유발 물질 정보 [VER.260625C]`
+- 메뉴 타입:
+  - `sermode=0`: `menu_type = 1`
+  - `sermode=1`: `menu_type = 3`
+- 특이사항:
+  - 치킨 메뉴는 5페이지, 사이드 메뉴는 3페이지로 페이지네이션된다.
+  - 공식 목록의 `idx`를 기준으로 `puradak-{idx}` slug와 이미지 파일명을 사용한다.
+  - 알레르기 표의 `뼈/순(다리)살/윙콤보` 공통 행은 공식 목록의 각 부위별 메뉴에 매핑한다.
+  - `반하다` 세트 메뉴는 공식 상세 페이지 구성 설명을 기준으로 구성 메뉴와 고추마요소스 알레르기를 합산한다.
+  - 수집 당시 공식 목록 기준 83개 메뉴, 이미지 83개, 알레르기 row 487개를 반영했다.
+  - 첨부 알레르기 표에서 독립 행을 찾지 못한 `3색볼 (3구)`, `3색볼 (6구)`, `3색볼 (9구)`는 알레르기 미매칭으로 남겼다.
+
 ## 교촌치킨
 
 - 브랜드 slug: `kyochon`
@@ -248,6 +276,84 @@
   - 수집 당시 57개 메뉴, 이미지 57개, 알레르기 row 277개를 반영했다.
   - 수집 당시 `(토핑) 남해 구운마늘 (8알)`은 공식 성분표에 별도 알레르기 표기가 없어 알레르기 row 없이 반영했다.
 
+## 누구나홀딱반한닭
+
+- 브랜드 slug: `nuguna-banhandak`
+- 스크립트: `npm run import:nuguna-banhandak-menus`
+- 데이터 파일: `datas/menu_nuguna_banhandak.json`
+- 이미지 경로: `public/assets/menus/nuguna-banhandak`
+- Storage 경로: `menus/nuguna-banhandak`
+- 목록 URL:
+  - `https://www.nuguna-banhandak.co.kr/product/list?ca_id=03`
+  - `https://www.nuguna-banhandak.co.kr/product/list?ca_id=04`
+  - `https://www.nuguna-banhandak.co.kr/product/list?ca_id=05`
+  - `https://www.nuguna-banhandak.co.kr/product/list?ca_id=06`
+  - `https://www.nuguna-banhandak.co.kr/product/list?ca_id=07`
+  - `https://www.nuguna-banhandak.co.kr/product/list?ca_id=08`
+- 상세 URL 패턴: `https://www.nuguna-banhandak.co.kr/popup/product_view?wm_id={id}`
+- 메뉴 타입:
+  - `ca_id=03,04,05`: `menu_type = 1`
+  - `ca_id=06,07`: `menu_type = 2`
+  - `ca_id=08`: `menu_type = 3`
+- 알레르기 위치:
+  - 메뉴 페이지와 상세 팝업에는 메뉴별 알레르기 텍스트가 직접 없으므로, 공식 알레르기 성분표 이미지를 수동 전사해 importer의 `ALLERGY_BY_NAME`에 매핑한다.
+- 특이사항:
+  - 목록 HTML에 메뉴 ID, 메뉴명, 설명, 이미지 URL이 들어있고, 상세 팝업은 큰 이미지와 설명만 제공한다.
+  - DB 알레르기 마스터에는 `잣` 전용 코드가 없어 `호두·견과류` 코드인 `walnut`으로 묶어 반영한다.
+  - 수집 당시 43개 메뉴, 이미지 43개, 알레르기 row 253개를 반영했다.
+  - 수집 당시 `셀프주먹밥`은 첨부 공식 성분표에 별도 알레르기 표기가 없어 알레르기 누락으로 남겼다.
+
+## 깐부치킨
+
+- 브랜드 slug: `kkanbu`
+- 스크립트: `npm run import:kkanbu-menus`
+- 데이터 파일: `datas/menu_kkanbu.json`
+- 이미지 경로: `public/assets/menus/kkanbu`
+- 최적화 이미지 경로: `public/assets/menus-optimized/kkanbu`
+- Storage 경로: `menus/kkanbu`
+- 목록 URL:
+  - `http://kkanbu.co.kr/home/sub01.php?mid=8`
+  - `http://kkanbu.co.kr/home/sub01.php?mid=9`
+- 상세 URL 패턴: `http://kkanbu.co.kr/home/sub01.php?mid={detailMid}&uid={uid}`
+- 메뉴 타입:
+  - `mid=8`: `menu_type = 1`
+  - `mid=9`: `menu_type = 3`
+- 알레르기 위치:
+  - 현재 수집 턴에는 알레르기 성분표 이미지가 첨부되지 않아 importer의 `ALLERGY_BY_NAME`은 비어 있다.
+  - 성분표가 제공되면 `ALLERGY_BY_NAME`에 메뉴명 정규화 키로 매핑하고 `npm run import:kkanbu-menus`, `npm run optimize:menu-images:apply -- --brand=kkanbu`를 다시 실행한다.
+- 특이사항:
+  - 목록은 페이지네이션을 사용한다. `mid=8`은 3페이지, `mid=9`는 2페이지까지 순회한다.
+  - `AI깐부`는 `바삭한 식스팩`, `크리스피 순살치킨`, `치즈스틱`이 함께 나가는 메뉴이므로 설명에 구성 정보를 추가했다.
+  - 수집 당시 37개 메뉴, 이미지 37개를 반영했다.
+  - WebP 최적화 후 Storage에는 메인 WebP 37개와 썸네일 WebP 37개가 남아 있고, 기존 PNG/JPG 37개는 삭제했다.
+  - 알레르기 row는 성분표 미첨부로 0개다.
+
+## 노랑통닭
+
+- 브랜드 slug: `norangtongdak`
+- 스크립트: `npm run import:norangtongdak-menus`
+- 데이터 파일: `datas/menu_norangtongdak.json`
+- 이미지 경로: `public/assets/menus/norangtongdak`
+- 최적화 이미지 경로: `public/assets/menus-optimized/norangtongdak`
+- Storage 경로: `menus/norangtongdak`
+- 목록 URL:
+  - `https://www.norangtongdak.co.kr/menu/chicken_list.html`
+  - `https://www.norangtongdak.co.kr/menu/side.html`
+- 상세 URL 패턴:
+  - `https://www.norangtongdak.co.kr/menu/chicken_view.html?mode=VIEW_FORM&p_no={id}&p=1&s_p_type=A`
+  - `https://www.norangtongdak.co.kr/menu/side_view.html?mode=VIEW_FORM&p_no={id}&p=1&s_p_type=F`
+- 메뉴 타입:
+  - `chicken_list.html`: `menu_type = 1`
+  - `side.html`: `menu_type = 3`
+- 알레르기 위치:
+  - 메뉴 페이지에는 메뉴별 알레르기 텍스트가 직접 없으므로, 첨부된 공식 알레르기 HTML 표를 `ALLERGY_TABLE_FILE`에서 읽어 메뉴명 기준으로 매핑한다.
+- 특이사항:
+  - 공식 페이지 이미지 요청은 Node fetch에서 TLS `dh key too small` 오류가 나므로 importer의 페이지/이미지 다운로드는 `curl -k`를 사용한다.
+  - 목록 HTML에 메뉴 ID(`p_no`), 메뉴명, 설명, 이미지 URL이 직접 들어있다.
+  - `먹태`는 공식 알레르기 표의 성분 칸이 비어 있어 알레르기 row 없이 반영했다.
+  - 수집 당시 48개 메뉴, 이미지 48개, 알레르기 row 314개를 반영했다.
+  - WebP 최적화 후 Storage에는 메인 WebP 48개와 썸네일 WebP 48개가 남아 있고, 기존 PNG 48개는 삭제했다.
+
 ## 새 브랜드 추가 절차
 
 1. 목록 페이지에서 메뉴 ID, 메뉴명, 이미지 URL을 얻을 수 있는지 확인한다.
@@ -259,8 +365,27 @@
 7. Storage `menus/{brand-slug}`에 업로드한다.
 8. Supabase `brands`, `menus`, `menu_allergens`, 필요 시 `menu_origins`, `data_sources`를 갱신한다.
 9. importer에서 `menu_type`을 같이 넣는다.
-10. 수집 결과와 브랜드별 특이사항을 이 문서에 추가한다.
-11. `npm run build`를 실행해 타입/빌드 상태를 확인한다.
+10. `npm run optimize:menu-images:apply -- --brand={brand-slug}`를 실행해 기존 PNG Storage URL을 WebP 최적화본 URL로 교체한다.
+11. 수집 결과와 브랜드별 특이사항을 이 문서에 추가한다.
+12. `npm run build`를 실행해 타입/빌드 상태를 확인한다.
+
+## 이미지 최적화 이력
+
+- 스크립트: `npm run optimize:menu-images:apply`
+- 최적화 대상: 활성 메뉴 중 `image_url`이 있는 메뉴
+- 최적화 규칙:
+  - 메인 이미지: 긴 변 1200px, WebP quality 80
+  - 썸네일 이미지: 긴 변 480px, WebP quality 75
+- Storage 경로:
+  - 메인: `menus/{brand-slug}/{file-base}.webp`
+  - 썸네일: `menus/{brand-slug}/thumbs/{file-base}.webp`
+- 2026-07-01 실행 결과:
+  - 기존 활성 메뉴 이미지 522개와 노랑통닭 활성 메뉴 이미지 48개를 `menus.image_url` WebP 최적화본으로 갱신했다.
+  - 노랑통닭 원본 PNG 212.5MB가 메인 WebP 3.3MB로 줄어 약 98.5% 절감됐다.
+  - 노랑통닭 썸네일 WebP 48개를 함께 생성했고, 로컬 썸네일 총량은 약 697KB다.
+  - 노랑통닭 DB 갱신 확인 후 Storage의 기존 PNG 메뉴 이미지 48개를 삭제했다.
+  - 노랑통닭 Storage에는 메인 WebP 48개와 썸네일 WebP 48개가 남아 있다.
+  - 로컬 최적화 산출물은 `public/assets/menus-optimized`에 저장한다.
 
 ## 주의할 점
 

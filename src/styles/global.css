@@ -381,7 +381,7 @@ h1 {
   position: absolute;
   display: block;
   aspect-ratio: 1;
-  opacity: 0.5;
+  opacity: 0.75;
   animation-name: home-party-float;
   animation-duration: 8s;
   animation-timing-function: ease-in-out;
@@ -451,7 +451,6 @@ h1 {
   top: 438px;
   left: 22px;
   width: 58px;
-  opacity: 0.92;
   --tilt: 20deg;
   --float-delay: -2.5s;
 }
@@ -460,7 +459,6 @@ h1 {
   top: 468px;
   right: 30px;
   width: 64px;
-  opacity: 0.9;
   --tilt: -16deg;
   --float-delay: -5.5s;
 }
@@ -469,7 +467,6 @@ h1 {
   top: 610px;
   left: 14px;
   width: 76px;
-  opacity: 0.86;
   --tilt: -8deg;
   --float-delay: -3.5s;
 }
@@ -478,7 +475,6 @@ h1 {
   top: 650px;
   right: 18px;
   width: 58px;
-  opacity: 0.88;
   --tilt: 15deg;
   --float-delay: -1.5s;
 }
@@ -496,7 +492,6 @@ h1 {
   right: 98px;
   bottom: 128px;
   width: 66px;
-  opacity: 0.82;
   --tilt: 24deg;
   --float-delay: -4.5s;
 }
@@ -852,6 +847,10 @@ h1 {
   bottom: calc(var(--nav-height) + 26px);
 }
 
+.fixed-allergen-card--above-save {
+  bottom: 94px;
+}
+
 .fixed-allergen-card-content {
   display: flex;
   flex-direction: row;
@@ -878,6 +877,9 @@ h1 {
 
 .fixed-allergen-card .selected-allergen-row {
   padding-bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .fixed-allergen-card .selected-allergen-row span,
@@ -1060,8 +1062,13 @@ h1 {
   min-height: 88px;
   padding: 10px;
   border-radius: 28px;
+  border: 0;
   background: var(--color-canvas);
   box-shadow: var(--shadow-card);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
   transition-property: transform, box-shadow;
   transition-duration: 180ms;
   transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
@@ -1072,6 +1079,11 @@ h1 {
 }
 
 .menu-card--unavailable {
+  opacity: 0.35;
+}
+
+.category-page .menu-card--unavailable,
+.brand-page .menu-card--unavailable {
   opacity: 0.35;
 }
 
@@ -1249,6 +1261,7 @@ h1 {
 .food-visual img {
   display: block;
   width: 100%;
+  max-width: 300px;
   height: 100%;
   object-fit: cover;
   outline: none;
@@ -1686,8 +1699,13 @@ h1 {
   align-content: start;
   padding: 12px;
   border-radius: 28px;
+  border: 0;
   background: var(--color-canvas);
   box-shadow: var(--shadow-card);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
   transition-property: transform, box-shadow;
   transition-duration: 180ms;
   transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
@@ -1979,9 +1997,6 @@ h1 {
   width: 100%;
   min-height: 320px;
   border-radius: 32px;
-  box-shadow:
-    0 18px 42px rgb(31 35 48 / 14%),
-    inset 0 0 0 1px rgb(25 25 27 / 7%);
 }
 
 .menu-detail-graphic {
@@ -1994,6 +2009,7 @@ h1 {
 }
 
 .menu-detail-hero h1,
+.menu-detail-hero h2,
 .onboarding-hero h1 {
   max-width: 13ch;
   font-size: 32px;
@@ -2049,6 +2065,7 @@ h1 {
 .profile-summary-card {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 .detail-result-panel {
   text-align: center;
@@ -2059,6 +2076,7 @@ h1 {
 }
 .detail-result-panel strong,
 .detail-section h2,
+.detail-section h3,
 .onboarding-panel__header strong,
 .onboarding-note strong,
 .profile-summary-card strong {
@@ -2149,6 +2167,7 @@ h1 {
 
 .allergies-page {
   gap: 18px;
+  padding-bottom: 184px;
 }
 
 .allergies-hero {
@@ -2305,10 +2324,30 @@ h1 {
   line-height: 1.25;
 }
 
+.fixed-save-bar {
+  position: fixed;
+  right: max(16px, calc((100vw - 430px) / 2 + 16px));
+  bottom: 16px;
+  left: max(16px, calc((100vw - 430px) / 2 + 16px));
+  z-index: 14;
+  max-width: 398px;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 30px;
+  background: rgb(255 255 255 / 88%);
+  box-shadow:
+    0 0 0 1px rgb(25 25 27 / 6%),
+    0 18px 46px rgb(31 35 48 / 16%);
+  backdrop-filter: blur(18px);
+}
+
 .save-button {
-  position: sticky;
-  bottom: calc(var(--nav-height) + 12px);
   width: 100%;
+}
+
+.save-button:disabled {
+  cursor: default;
+  opacity: 0.56;
 }
 
 .bottom-nav {
@@ -2370,6 +2409,107 @@ h1 {
   box-shadow:
     0 0 0 1px rgb(25 25 27 / 5%),
     0 12px 20px rgb(25 25 27 / 18%);
+}
+
+.bottom-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bottom-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(15 17 18 / 34%);
+  cursor: pointer;
+  animation: sheet-fade-in 160ms ease-out both;
+}
+
+.bottom-sheet__panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(100vw, 430px);
+  max-height: min(86dvh, 760px);
+  border-radius: 32px 32px 0 0;
+  background: var(--color-canvas);
+  box-shadow:
+    0 -18px 48px rgb(15 17 18 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 76%);
+  animation: sheet-slide-up 220ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.bottom-sheet__header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 52px;
+  padding: 8px 14px 4px;
+}
+
+.bottom-sheet__handle {
+  grid-column: 2;
+  width: 44px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: rgb(23 24 18 / 18%);
+}
+
+.bottom-sheet__header .icon-button {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.bottom-sheet__body {
+  display: grid;
+  gap: 32px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 24px max(28px, env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+
+.bottom-sheet .menu-detail-hero {
+  padding-bottom: 22px;
+  gap: 16px;
+}
+
+.bottom-sheet .menu-detail-hero > .food-fallback,
+.bottom-sheet .menu-detail-hero > .food-visual {
+  min-height: 220px;
+  border-radius: 28px;
+}
+
+.bottom-sheet .menu-detail-hero h2 {
+  margin: 4px 0 0;
+  color: var(--color-ink);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+@keyframes sheet-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-slide-up {
+  from {
+    transform: translateY(28px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: 768px) {

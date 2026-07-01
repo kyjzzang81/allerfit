@@ -17,18 +17,18 @@ const homeCategoryCards = [
 ];
 
 const homePartyGraphics = [
-  "chicken",
+  "bunsik",
   "pizza",
-  "hamburger",
+  "hansik",
   "dessert",
-  "icecream",
+  "salad",
   "japanesse",
   "chicken",
   "pizza",
   "hamburger",
-  "dessert",
+  "hotdog",
   "icecream",
-  "japanesse",
+  "tang-guk",
 ];
 
 export function HomePage() {
@@ -38,7 +38,7 @@ export function HomePage() {
         {homePartyGraphics.map((slug, index) => (
           <span
             className={`home-food-party__item home-food-party__item--${index + 1}`}
-            key={slug}
+            key={`${slug}-${index}`}
           >
             <img src={`/assets/categories/${slug}.png`} alt="" />
           </span>
