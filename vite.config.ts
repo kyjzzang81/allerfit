@@ -18,8 +18,8 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        theme_color: '#ff3f1f',
-        background_color: '#fffaf5',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
         categories: ['food', 'health', 'lifestyle'],
         icons: [
           {

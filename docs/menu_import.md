@@ -233,6 +233,51 @@
   - 수집 당시 공식 목록 기준 83개 메뉴, 이미지 83개, 알레르기 row 487개를 반영했다.
   - 첨부 알레르기 표에서 독립 행을 찾지 못한 `3색볼 (3구)`, `3색볼 (6구)`, `3색볼 (9구)`는 알레르기 미매칭으로 남겼다.
 
+## 처갓집양념치킨
+
+- 브랜드 slug: `cheogajip`
+- 스크립트: `npm run import:cheogajip-menus`
+- 데이터 파일: `datas/menu_cheogajip.json`
+- 이미지 경로: `public/assets/menus/cheogajip`
+- Storage 경로: `menus/cheogajip`
+- 목록 URL:
+  - `https://www.cheogajip.co.kr/bbs/board.php?bo_table=allmenu&sca=%ED%95%9C%EB%A7%88%EB%A6%AC%EB%A9%94%EB%89%B4`
+  - `https://www.cheogajip.co.kr/bbs/board.php?bo_table=allmenu&sca=%EB%8B%A4%EB%A6%AC.%EB%82%A0%EA%B0%9C%EB%A9%94%EB%89%B4`
+  - `https://www.cheogajip.co.kr/bbs/board.php?bo_table=allmenu&sca=%EC%82%AC%EC%9D%B4%EB%93%9C%EB%A9%94%EB%89%B4`
+- 알레르기 URL:
+  - `https://www.cheogajip.co.kr/bbs/content.php?co_id=allergy`
+- 메뉴 타입:
+  - `한마리메뉴`, `다리.날개메뉴`: `menu_type = 1`
+  - `사이드메뉴`: `menu_type = 3`
+- 특이사항:
+  - 목록 HTML에 메뉴명과 썸네일 이미지가 직접 들어 있다.
+  - 알레르기 정보는 공식 `알레르기 유발 물질 안내` HTML 테이블을 파싱한다.
+  - 같은 메뉴가 `한마리메뉴`와 `사이드메뉴`에 중복 노출되면 `사이드메뉴`의 `menu_type = 3`을 우선한다.
+  - 로컬 검증 기준 공식 목록 34개 메뉴, 이미지 URL 34개, `menu_type=1` 24개, `menu_type=3` 10개를 수집했다.
+  - 공식 알레르기 표에서 대응 행을 찾지 못한 메뉴는 `미트칠리 양념치킨`, `꼬꼬뱅 양념치킨`, `근위볶음`이다.
+
+## 오븐마루
+
+- 브랜드 slug: `ovenmaru`
+- 스크립트: `npm run import:ovenmaru-menus`
+- 데이터 파일: `datas/menu_ovenmaru.json`
+- 이미지 경로: `public/assets/menus/ovenmaru`
+- Storage 경로: `menus/ovenmaru`
+- 목록 URL:
+  - `https://ovenmaru.com/html/menu.html`
+- 알레르기 URL:
+  - `https://ovenmaru.com/resource/menuPopup.php` (`POST idx={data-idx}`)
+- 메뉴 타입:
+  - `div.menu_2`, `div.menu_3`, `div.menu_4`: `menu_type = 1`
+  - `div.menu_5`: `menu_type = 3`
+- 특이사항:
+  - 목록 HTML의 `data-idx`를 기준으로 `ovenmaru-{idx}` slug와 이미지 파일명을 사용한다.
+  - 메뉴명과 목록 이미지는 `section.menu`의 각 `menu_inner` 블록에서 수집한다.
+  - 설명, 상세 이미지, 알레르기 정보는 각 메뉴 팝업 HTML에서 수집한다.
+  - 팝업의 첫 번째 `menu_info_box_txt`가 알레르기 정보이고, 세 번째 항목은 원산지 정보다.
+  - 로컬 목록 검증 기준 공식 목록 52개 메뉴, 이미지 URL 52개, `menu_type=1` 25개, `menu_type=3` 27개를 수집했다.
+  - 네트워크가 불안정한 환경에서는 `OVENMARU_USE_CACHE=1 OVENMARU_ALLOW_MISSING_POPUPS=1 OVENMARU_SKIP_IMPORT=1 OVENMARU_SKIP_DOWNLOAD=1 node scripts/import-ovenmaru-menus.mjs`로 목록 파서를 검증할 수 있다.
+
 ## 교촌치킨
 
 - 브랜드 slug: `kyochon`
@@ -353,6 +398,57 @@
   - `먹태`는 공식 알레르기 표의 성분 칸이 비어 있어 알레르기 row 없이 반영했다.
   - 수집 당시 48개 메뉴, 이미지 48개, 알레르기 row 314개를 반영했다.
   - WebP 최적화 후 Storage에는 메인 WebP 48개와 썸네일 WebP 48개가 남아 있고, 기존 PNG 48개는 삭제했다.
+
+## 자담치킨
+
+- 브랜드 slug: `jadam`
+- 스크립트: `npm run import:jadam-menus`
+- 데이터 파일: `datas/menu_jadam.json`
+- 이미지 경로: `public/assets/menus/jadam`
+- 최적화 이미지 경로: `public/assets/menus-optimized/jadam`
+- Storage 경로: `menus/jadam`
+- 목록 URL:
+  - `https://www.ejadam.co.kr/bbs/board.php?bo_table=menuChicken&sca=%EC%B9%98%ED%82%A8%EB%A9%94%EB%89%B4`
+  - `https://www.ejadam.co.kr/bbs/board.php?bo_table=menuPizza`
+  - `https://www.ejadam.co.kr/bbs/board.php?bo_table=menuEtc`
+- 상세 URL 패턴:
+  - 목록 페이지의 `#info{id}` 레이어 모달에 상세 이미지, 설명, 알레르기 텍스트가 함께 들어 있다.
+- 메뉴 타입:
+  - `menuChicken&sca=치킨메뉴`: `menu_type = 1`
+  - `menuPizza`: `menu_type = 2`
+  - `menuEtc`: `menu_type = 3`
+- 알레르기 위치:
+  - 각 메뉴의 `#info{id}` 레이어 모달 안 `[알레르기 유발 식품 표시]` 다음 텍스트를 사용한다.
+  - 첨부된 공식 영양/알레르기 표 이미지는 누락 보완 및 검증 참고로 사용한다.
+- 특이사항:
+  - 목록 HTML에 메뉴명과 썸네일 이미지가 있고, 같은 페이지 하단의 레이어 모달에 원본 이미지와 알레르기 텍스트가 있다.
+  - `찹쌀볼`은 모달에 알레르기 텍스트가 없어 첨부 공식 표의 `계란, 밀, 우유, 대두`로 보완했다.
+  - `모둠 감자튀김`, `에그야채볶음밥`은 공식 페이지 모달과 첨부표에서 일치 성분을 확인하지 못해 알레르기 row 없이 반영했다.
+  - 수집 당시 58개 메뉴, 이미지 58개, 알레르기 row 340개를 반영했다.
+  - WebP 최적화 후 Storage에는 메인 WebP 58개와 썸네일 WebP 58개가 남아 있고, 기존 PNG/JPG 58개는 삭제했다.
+
+## 보드람치킨
+
+- 브랜드 slug: `bodram`
+- 스크립트: `npm run import:bodram-menus`
+- 데이터 파일: `datas/menu_bodram.json`
+- 이미지 경로: `public/assets/menus/bodram`
+- 최적화 이미지 경로: `public/assets/menus-optimized/bodram`
+- Storage 경로: `menus/bodram`
+- 목록 URL:
+  - `http://www.bodram.com/m/product.html?branduid=3604370`
+- 상세 URL 패턴:
+  - `http://www.bodram.com/m/product.html?branduid={id}`
+- 메뉴 타입:
+  - 모바일 상품 캐러셀에 노출되는 치킨 메뉴: `menu_type = 1`
+- 알레르기 위치:
+  - 각 상품 상세의 `알레르기 정보` 탭 내용은 HTML의 `#tab-cont` 두 번째 `div`에 텍스트로 들어 있다.
+- 특이사항:
+  - 일반 목록 페이지가 아니라 모바일 상품 상세 페이지 안 `item-cont swiper-wrapper` 캐러셀에서 전체 메뉴 ID를 수집한다.
+  - 메뉴 이미지는 schema.org `image` 중 `/design/bodram/img/*_box.jpg` 상세 이미지를 우선 사용한다.
+  - 알레르기 탭은 `- 항목명 : 성분` 여러 줄과 소스류를 함께 제공하므로, `없음` 항목은 제외하고 메뉴에 제공되는 전체 성분을 합산해 반영한다.
+  - 수집 당시 7개 메뉴, 이미지 7개, 알레르기 row 52개를 반영했다.
+  - WebP 최적화 후 Storage에는 메인 WebP 7개와 썸네일 WebP 7개가 남아 있고, 기존 PNG 7개는 삭제했다.
 
 ## 새 브랜드 추가 절차
 

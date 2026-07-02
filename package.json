@@ -25,9 +25,15 @@
     "import:nuguna-banhandak-menus": "node scripts/import-nuguna-banhandak-menus.mjs",
     "import:kkanbu-menus": "node scripts/import-kkanbu-menus.mjs",
     "import:puradak-menus": "node scripts/import-puradak-menus.mjs",
+    "import:cheogajip-menus": "node scripts/import-cheogajip-menus.mjs",
+    "import:ovenmaru-menus": "node scripts/import-ovenmaru-menus.mjs",
     "import:norangtongdak-menus": "node scripts/import-norangtongdak-menus.mjs",
+    "import:jadam-menus": "node scripts/import-jadam-menus.mjs",
+    "import:bodram-menus": "node scripts/import-bodram-menus.mjs",
     "optimize:menu-images": "node scripts/optimize-menu-images.mjs",
-    "optimize:menu-images:apply": "node scripts/optimize-menu-images.mjs --apply"
+    "optimize:menu-images:apply": "node scripts/optimize-menu-images.mjs --apply",
+    "optimize:brand-logos": "node scripts/optimize-brand-logos.mjs",
+    "optimize:brand-logos:apply": "node scripts/optimize-brand-logos.mjs --apply"
   },
   "dependencies": {
     "@capacitor/android": "^7.6.7",

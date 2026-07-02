@@ -3,6 +3,12 @@ dist
 .npm-cache
 assets/brands/
 assets/menus/
+assets/menu_optimized/
+assets/menus-optimized/
+public/assets/menu_optimized/
+public/assets/menus-optimized/
+public/assets/brand_optimized/
+public/assets/brands-optimized/
 .DS_Store
 .env
 .env.local
